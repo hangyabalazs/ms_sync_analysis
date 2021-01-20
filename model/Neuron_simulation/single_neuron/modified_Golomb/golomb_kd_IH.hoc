@@ -1,0 +1,111 @@
+//REFERENCES:
+//   -	Golomb D, Donner K, Shacham L, Shlosberg D, Amitai Y, Hansel D. 
+//       Mechanisms of firing patterns in fast-spiking cortical interneurons. 
+//       PLoS Comput Biol. 2007 Aug;3(8):e156. doi: 10.1371/journal.pcbi.0030156. 
+//       Epub 2007 Jun 20. PMID: 17696606; PMCID: PMC1941757.
+//   -	Káli S, Zemankovics R. 
+//       The effect of dendritic voltage-gated conductances on the neuronal impedance: a quantitative model.
+//       J Comput Neurosci. 2012 Oct;33(2):257-84. doi: 10.1007/s10827-012-0385-9.
+//       Epub 2012 Feb 17. PMID: 22350741.
+//   -	Borg-Graham L.J. (1999) 
+//       Interpretations of Data and Mechanisms for Hippocampal Pyramidal Cell Models.
+//       In: Ulinski P.S., Jones E.G., Peters A. (eds) Models of Cortical Circuits.
+//      Cerebral Cortex, vol 13. Springer, Boston, MA. https://doi.org/10.1007/978-1-4615-4903-1_2.
+
+SIMTIME = 700 //simulation lenght, (ms)
+current = 0.1 //(nA) (Golomb cell: 0.0042nA on 100 um2, here: 0.0042*50 nA on 5000um2 would be the rational) OR -0.3 for sag response
+color = 1 //first color
+tstop = SIMTIME //(ms)
+
+GKD = 0.0018 //(S/cm2), Golomb model: 0.00039-fast spiking (fig2/C) OR 0.0018 (fig2/D) burst firing
+TAUA = 2 //(ms), Golomb model: 2 (ms)
+TAUB = 120 //(ms), Golomb model: 150 (ms)
+
+GIH = 0.0001 //H current conductance (S/cm2)
+
+ create soma
+ access soma
+ soma {
+	//cell geometry: (important because I clamp current is specified in density)
+	diam = 30 //diameter (um), Golomb model: 10 (um)
+	L = 5000/(3.14159265359*diam) //compartment length (um2) so surface area is about 5000 um2, Golomb model: 100/(3.14*diam) (um)
+	nseg = 1 //number of compartments
+	Ra = 100 //membrane resistance
+
+	insert pas
+	e_pas = -60 //(mV), Golomb model: -70 (mV)
+	g_pas = 0.0001 //(uS), Golomb model: 0.00025 (uS)
+  
+	insert nas //TRANSIENT NATRIUM
+	ena = 50 //(mV)
+ 
+	insert kd  //SLOWLY INACTIVATING D-TYPE K (controll burst firing behíviour, by restricting the size of afterdepolarization), without that, with nas and kdr the neuron doesn't stop firing
+	ek = -90 //(mV)
+	gkd_kd = GKD //(S/cm2), Golomb model: 0.00039 (fig2/C) OR 0.0018 (fig2/D)
+	tau_a_kd = TAUA //(ms), Golomb model: 2 (ms)
+	tau_b_kd = TAUB //(ms), Golomb model: 150 (ms)
+	theta_b_kd = -60 //Golomb model: -70 (mV)
+ 
+	insert kdr //DELAYED RECTIFIER K (repolarization?):
+	ek=-90 //(mV)
+ 
+	insert IH_params
+	gmax_IH_params = GIH //(S/cm2)
+	X_v0_IH_params = -98/1000 //Szabolcs model (Borg-Graham parameters): -90/1000
+	X_k0_IH_params = -6.73/1000 //Szabolcs model (Borg-Graham parameters): -10/1000
+	X_kt_IH_params = 1.2353
+	X_gamma_IH_params = 0.81 //Szabolcs model (Borg-Graham parameters): 0.8
+	X_tau0_IH_params = 0.13 //Szabolcs model (Borg-Graham parameters): 10
+ }
+
+//soma insert extracellular
+	
+//objref r, pc
+//pc = new ParallelContext()
+//r = new Random(pc.time())
+
+//GUI
+objref g //Voltage plot
+g = new Graph()
+g.size(0, tstop, -130, 50)
+
+//STIMULUS
+nStim = 1
+objectvar stim[nStim]
+
+proc rerun() {
+	gmax_IH_params = GIH
+	gkd_kd_new = GKD
+	tau_a_kd_new = TAUA
+	tau_b_kd_new = TAUB
+for i = 0, nStim-1 {
+	soma stim[i] = new IClamp(0.5)
+	stim[i].amp = current //density measure: aplied current will be distributed along the cell surface
+	stim[i].dur = SIMTIME-150 //duration (ms)
+	stim[i].del = 50 //delay (ms)
+}
+	color = color + 1
+	g.addvar("soma.v(0.5)", color, 0)
+	g.exec_menu("Keep Lines")
+	graphList[0].append(g)
+	run()
+}
+
+tstop = SIMTIME
+
+xpanel("Current")
+
+	// xvalue("injection", "current", [, 1, "rerun()", [,0, 0]])
+	xvalue("current", "current", 1) //1-> placed horrizontally
+	xvalue("GKD", "GKD", 1) //1-> placed horrizontally
+	xvalue("TAUA", "TAUA", 1) //1-> placed horrizontally
+	xvalue("TAUB", "TAUB", 1) //1-> placed horrizontally
+	xvalue("GIH", "GIH", 1) //1-> placed horrizontally
+	xbutton("Start", "rerun() ", 1)
+	xbutton("Clear", "g.erase_all() color = 1", 1)
+	
+	doEvents()
+xpanel(350, 0)
+// system("pause")
+
+// run()

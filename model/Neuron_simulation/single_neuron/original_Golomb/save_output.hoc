@@ -1,0 +1,78 @@
+//REFERENCES:
+//   -	Golomb D, Donner K, Shacham L, Shlosberg D, Amitai Y, Hansel D. 
+//       Mechanisms of firing patterns in fast-spiking cortical interneurons. 
+//       PLoS Comput Biol. 2007 Aug;3(8):e156. doi: 10.1371/journal.pcbi.0030156. 
+//       Epub 2007 Jun 20. PMID: 17696606; PMCID: PMC1941757.
+
+SIMTIME = 700 //simulation lenght, (ms)
+current = 0.0042 //(nA)
+color = 1 //first color
+tstop = SIMTIME //(ms)
+
+ create soma
+ access soma
+ soma {
+	//cell geometry: (important because I clamp current is specified in density)
+	diam = 10 //diameter (um)
+	L = 100/(3.14*diam) //compartment length (um2) so surface area is about 100 um2
+	nseg = 1
+	Ra = 100
+	}
+
+ soma insert pas //soma insert pas
+     
+ e_pas = -70 //(mV)
+ g_pas = 0.00025 //(uS)
+        
+ soma insert nas 
+ ena=50 //(mV)
+
+ soma insert kdr
+ ek=-90 //(mV)
+
+ soma insert kd 
+ ek=-90 //(mV)
+ gkd_kd = 0.0018 //(S/cm2) (fig2/D) burst firing OR 0.00039-fast spiking (fig2/C)
+ 
+ objref tvec, vvec
+	tvec = new Vector() 
+	vvec = new Vector()
+	vvec.record(&soma.v(0.5))
+	tvec.record(&t)
+ 
+//GUI
+objref g //Voltage plot
+g = new Graph()
+g.size(0, tstop, -130, 50)
+
+//STIMULUS
+nStim = 1
+objectvar stim[nStim]
+for i = 0, nStim-1 {
+	soma stim[i] = new IClamp(0.5)
+	stim[i].amp = current //density measure: aplied current will be distributed along the cell surface
+	stim[i].dur = 500 //duration (ms)
+	stim[i].del = 50 //delay (ms)
+}
+
+	color = color + 1
+	g.addvar("soma.v(0.5)", color, 0)
+	g.exec_menu("Keep Lines")
+	graphList[0].append(g)
+	run()
+
+
+tstop = SIMTIME
+
+run()
+
+objref outfile1, outfile2
+	outfile1 = new File()
+	outfile2 = new File()
+	outfile1.wopen("time.dat")
+	outfile2.wopen("voltage_Ih.dat")
+	tvec.printf(outfile1)
+	vvec.printf(outfile2)
+	outfile1.close()
+	outfile2.close()
+quit()

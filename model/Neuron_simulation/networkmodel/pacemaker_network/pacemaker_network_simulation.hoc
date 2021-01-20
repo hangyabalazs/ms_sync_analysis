@@ -1,0 +1,212 @@
+//REFERENCES:
+//   -	Golomb D, Donner K, Shacham L, Shlosberg D, Amitai Y, Hansel D. 
+//       Mechanisms of firing patterns in fast-spiking cortical interneurons. 
+//       PLoS Comput Biol. 2007 Aug;3(8):e156. doi: 10.1371/journal.pcbi.0030156. 
+//       Epub 2007 Jun 20. PMID: 17696606; PMCID: PMC1941757.
+//   -	Káli S, Zemankovics R. 
+//       The effect of dendritic voltage-gated conductances on the neuronal impedance: a quantitative model.
+//       J Comput Neurosci. 2012 Oct;33(2):257-84. doi: 10.1007/s10827-012-0385-9.
+//       Epub 2012 Feb 17. PMID: 22350741.
+//   -	Borg-Graham L.J. (1999) 
+//       Interpretations of Data and Mechanisms for Hippocampal Pyramidal Cell Models.
+//       In: Ulinski P.S., Jones E.G., Peters A. (eds) Models of Cortical Circuits.
+//      Cerebral Cortex, vol 13. Springer, Boston, MA. https://doi.org/10.1007/978-1-4615-4903-1_2.
+
+//----------------------------------------------------------------------------
+//CREATE CELLS (from templates)
+//----------------------------------------------------------------------------
+load_file("CTBtemplate.tem") //load template
+
+ropen("actual_run/parameters.txt")
+nCTB = fscan() //number of CTB cells
+
+segmLength1 = fscan() //length of stimulations
+segmLength2 = fscan() //length of stimulations
+segmLength3 = fscan() //length of stimulations
+tstop = segmLength1+segmLength2+segmLength3 //time of simulation
+
+objectvar cellMatrix[nCTB]
+for i = 0, nCTB-1 {
+	if (i<nCTB) {
+	cellMatrix[i] = new CTBtemplate()
+	}
+}
+//----------------------------------------------------------------------------
+//CONNECT CELLS
+//----------------------------------------------------------------------------
+
+//load reversal potential (MATLAB generated .txt file)::
+double revMatrix[nCTB][nCTB]
+for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
+	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
+		revMatrix[i1][i2] = fscan()
+	}
+}
+
+//1. mode: fixing synaptic delays, and vary timeconstants (tau, decay factor)
+//load time constants (MATLAB generated .txt file)::
+double decayMatrix[nCTB][nCTB]
+for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
+	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
+		decayMatrix[i1][i2] = fscan()
+	}
+}
+//2. mode: fixing timeconstants (tau, decay factor), and vary synaptic delays
+// Or instead of decay time constants we can controll synaptic delays:
+//load time delays (MATLAB generated .txt file)::
+//double delayMatrix[nCTB][nCTB]
+//for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
+//	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
+//		delayMatrix[i1][i2] = fscan()
+//	}
+//}
+
+
+//load weights (MATLAB generated .txt file)::
+double weightMatrix[nCTB][nCTB]
+for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
+	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
+		weightMatrix[i1][i2] = fscan()
+	}
+}
+
+
+objectvar syns[nCTB][nCTB]
+for i1 = 0, nCTB-1 { //who gives
+	for i2 = 0, nCTB-1 { //who receives
+		//1. mode: fixing synaptic delays, and vary timeconstants (tau, decay factor)
+		timeC = decayMatrix[i1][i2]
+		delay = 1
+		//2. mode: fixing timeconstants (tau, decay factor), and vary synaptic delays
+		//timeC = 5 
+		//delay = delayMatrix[i1][i2]
+		
+		revPot = revMatrix[i1][i2]
+		weight = weightMatrix[i1][i2]
+		//cellMatrix[i2] receives an event from cellMatrix[i1] (synapse stored in syns[i1][i2])
+		cellMatrix[i2].soma syns[i1][i2] = new ExpSyn(0) //defaults: ExpSyn.tau = 0.1; ExpSyn.e = 0;
+		syns[i1][i2].e = revPot
+		syns[i1][i2].tau = timeC
+		//synaptic current (nanoamps): i = (weight * exp(-t/tau))*(v-e)
+		cellMatrix[i1].soma cellMatrix[i2].nclist.append(new NetCon(&v(1), syns[i1][i2], 0, delay, weight)) //event crossing 0 mV, will generate an event on the postsynaptic side 1 ms later
+	}
+}
+
+//----------------------------------------------------------------------------
+//STIMULATE CELLS (tonic stimulation)
+//----------------------------------------------------------------------------
+
+numofStim = fscan()  //number of stimulations
+print numofStim
+objref stimMatrix[numofStim]
+objref stimAmp, cellIds
+cellIds = new Vector(numofStim)
+stimAmp = new Vector(numofStim)
+
+for i = 0, numofStim-1 { //each row represents one stimulating electrode
+	cellId = fscan()
+	cellIds.x[i] = cellId
+	cellMatrix[cellId].soma{
+	stimMatrix[i] = new IClamp(0.5)
+	stimMatrix[i].amp = fscan()
+	stimAmp.x[i] = stimMatrix[i].amp
+	stimMatrix[i].dur = fscan()
+	stimMatrix[i].del = fscan()
+	}
+}
+
+/*
+//Add rhythmic delta modulation
+numofDeltaStim = fscan()  //number of stimulations
+objref noiseMatrix[numofDeltaStim]
+ampMean = stimAmp.mean()/15
+for i = 0, numofDeltaStim-1 { //each row represents one stimulating electrode
+	cellMatrix[cellIds.x[i]].soma{	
+	noiseMatrix[i] = new SinClamp(0.5)
+	noiseMatrix[i].pkamp = ampMean
+	noiseMatrix[i].freq = 1
+	noiseMatrix[i].dur = stimMatrix[i].dur
+	noiseMatrix[i].del = stimMatrix[i].del
+	print(cellIds.x[i])
+	print(noiseMatrix[i].dur)
+	print(noiseMatrix[i].del)
+	}
+}*/
+
+numofDeltaStim = fscan()  //number of stimulations
+objref noiseMatrix[numofDeltaStim]
+for i = 0, numofDeltaStim-1 { //each row represents one stimulating electrode
+	cellId = fscan()
+	cellMatrix[cellId].soma{	
+	noiseMatrix[i] = new SinClamp(0.5)
+	noiseMatrix[i].pkamp = fscan()
+	noiseMatrix[i].freq = fscan()
+	noiseMatrix[i].dur = fscan()
+	noiseMatrix[i].del = fscan()
+	}
+}
+
+/*
+ampMean = stimAmp.mean()/100
+print ampMean
+//Add noise
+objref r, pc
+pc = new ParallelContext()
+r = new Random(pc.time())
+objref ma
+ma = new Vector(101)
+for i = 0, 100 {
+	ma.x[i] = r.normal(0, ampMean)
+}
+print ma.var()*/
+
+ropen()
+//----------------------------------------------------------------------------
+//RUN SIMULATION
+//----------------------------------------------------------------------------
+//record time:
+objref tvec
+tvec = new Vector((segmLength1+segmLength2+segmLength3)*(1/dt))
+tvec.record(&t)
+
+//record potentials:
+objref potMat
+potMat = new Vector((segmLength1+segmLength2+segmLength3)*(1/dt)*(nCTB))
+lastPos = 0 //last position in potMat (for recording potentials)
+proc advance() {
+  fadvance()
+    for i1=0, nCTB-1{
+			//potMat.append(cellMatrix[i1].soma.v(0.5))
+			potMat.x[lastPos] = cellMatrix[i1].soma.v(0.5)
+			lastPos = lastPos + 1
+		}
+}
+
+objref g //Voltage plot
+g = new Graph()
+g.size(0, tstop, -130, 50)
+
+
+if (0<nCTB) {g.addvar("cellMatrix[0].soma.v(0.5)", 1, 0)}
+g.exec_menu("Keep Lines")
+graphList[0].append(g)
+
+run()  
+
+objref outfile1, outfile2
+outfile1 = new File()
+outfile2 = new File()
+outfile1.wopen("actual_run/time.dat")
+outfile2.wopen("actual_run/potentials.dat")
+tvec.printf(outfile1)
+potMat.printf(outfile2)
+outfile1.close()
+outfile2.close()
+
+//Create a flag for Matlab (indicating the simulation is terminated)
+objref flagfile
+flagfile = new File()
+flagfile.wopen("actual_run/flag_file")
+flagfile.close()
+
+quit()

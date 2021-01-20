@@ -1,0 +1,43 @@
+begintemplate CTBtemplate
+public soma, nclist
+create soma
+objectvar nclist
+proc init() {
+	soma {
+		diam = 30
+		L = 5000/(3.14*diam)
+		nseg = 1
+		Ra = 100
+	
+		insert pas
+		e_pas = -60
+		g_pas = 0.0001 
+		
+		insert nas //TRANSIENT NATRIUM
+		ena=50
+		gna_nas = 0.1125
+		theta_m_nas = -24 //small Na window current
+       
+		insert kd_new  //SLOWLY INACTIVATING D-TYPE K (controll burst firing behíviour, by restricting the size of afterdepolarization), without that, with nas and kdr the neuron doesn't stop firing
+		ek=-90
+		gkd_kd_new = 0.0018
+		tau_a_kd_new = 2 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		tau_b_kd_new = 120 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
+		insert kdr //DELAYED RECTIFIER K (repolarization?):
+		ek=-90
+		gkdr_kdr = 0.225
+ 
+		insert IH_params
+		gmax_IH_params = 0.0001
+		X_v0_IH_params = -98/1000
+		X_k0_IH_params = -6.73/1000
+		X_kt_IH_params = 1.2353
+		X_gamma_IH_params = 0.81
+		X_tau0_IH_params = 0.13
+		
+	}
+	
+	nclist = new List()
+}
+endtemplate CTBtemplate
