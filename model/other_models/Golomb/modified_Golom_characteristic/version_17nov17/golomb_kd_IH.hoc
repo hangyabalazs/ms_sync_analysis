@@ -1,0 +1,122 @@
+SIMTIME = 10000
+current = 0.0042*50 //-0.3//
+color = 1
+tstop = SIMTIME
+GKD =  0.0054 //0.0018 //
+TAUA = 2
+TAUB = 150
+GIH = 0.0001
+
+
+ create soma
+ access soma
+ soma {
+	diam = 30		            // geometry 
+	L = 5000/(3.14*diam)			// so that area is about 100 um2
+	nseg = 1
+	Ra = 100 }
+
+ soma insert pas
+     
+ e_pas = -60 //-70
+ g_pas = 0.0001 //0.00025
+    
+ soma insert nas //TRANSIENT NATRIUM
+ ena=50
+ gna_nas = 0.1125
+ theta_m_nas = -24 //small Na window current
+       
+ 
+ soma insert kd_new  //SLOWLY INACTIVATING D-TYPE K (controll burst firing behíviour, by restricting the size of afterdepolarization), without that, with nas and kdr the neuron doesn't stop firing
+ ek=-90
+ gkd_kd_new = GKD
+ tau_a_kd_new = TAUA
+ tau_b_kd_new = TAUB
+
+ 
+ soma insert kdr //DELAYED RECTIFIER K (repolarization?):
+ ek=-90
+ gkdr_kdr = 0.225
+ 
+soma insert IH_params
+gmax_IH_params = GIH
+	// X_v0_IH_params = -90/1000
+	// X_k0_IH_params = -6.73/1000
+	// X_kt_IH_params = 0.8431*1000
+	// X_gamma_IH_params = 0.6 //0.7124
+	// X_tau0_IH_params = 10/1000 //0.13/1000
+		X_v0_IH_params = -98/1000
+	X_k0_IH_params = -6.73/1000
+	X_kt_IH_params = 1.2353
+	X_gamma_IH_params = 0.81
+	X_tau0_IH_params = 0.13
+ 
+	objref tvec, vvec
+	tvec = new Vector() 
+	vvec = new Vector()
+	vvec.record(&soma.v(0.5))
+	tvec.record(&t)
+	
+soma insert extracellular
+	
+//STIMULUS
+nStim = 1
+objectvar stim[nStim]
+
+objref r, pc
+pc = new ParallelContext()
+r = new Random(pc.time())
+
+actDelay = 40
+
+//GUI
+objref g //Voltage plot
+g = new Graph()
+g.size(0, tstop, -130, 50)
+
+
+proc rerun() {
+	gmax_IH_params = GIH
+	gkd_kd_new = GKD
+	tau_a_kd_new = TAUA
+	tau_b_kd_new = TAUB
+for i = 0, nStim-1 {
+	soma stim[i] = new IClamp(0.5)
+	stim[i].amp = current //THE APPLIED CURRENT SHOULD BE MULTIPLIED WITH THE SURFACE???!!!!!
+	stim[i].dur = 3000
+	stim[i].del = 500
+}
+
+	color = color + 1
+	g.addvar("soma.v(0.5)", color, 0)
+	g.exec_menu("Keep Lines")
+	graphList[0].append(g)
+	run()
+}
+
+
+tstop = SIMTIME
+
+
+	
+
+///////////////////////////////////
+// start = 150
+
+
+xpanel("Synapse")
+
+	// xvalue("injection", "current", [, 1, "rerun()", [,0, 0]])
+	xvalue("current", "current", 1) //1-> placed horrizontally
+	xvalue("GKD", "GKD", 1) //1-> placed horrizontally
+	xvalue("TAUA", "TAUA", 1) //1-> placed horrizontally
+	xvalue("TAUB", "TAUB", 1) //1-> placed horrizontally
+	xvalue("GIH", "GIH", 1) //1-> placed horrizontally
+	xbutton("Start", "rerun()", 1)
+	xbutton("Clear", "g.erase_all() color = 1", 1)
+	
+	doEvents()
+xpanel(350, 0)
+// system("pause")
+
+// run()

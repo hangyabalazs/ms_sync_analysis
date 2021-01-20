@@ -1,0 +1,314 @@
+/*----------------------------------------------------------------------------
+
+	SIMULATIONS OF INTERCONNECTED GABAerg FAST CLUSTER CELLS - PING-PONG MODEL
+ 	=============================================
+
+
+----------------------------------------------------------------------------*/
+
+
+
+//----------------------------------------------------------------------------
+//  load and define general graphical procedures
+//----------------------------------------------------------------------------
+
+load_file("nrngui.hoc")
+
+objectvar g[20]			// max 20 graphs
+ngraph = 0
+
+proc addgraph() { local ii	// define subroutine to add a new graph
+				// addgraph("variable", minvalue, maxvalue)
+	ngraph = ngraph+1
+	ii = ngraph-1
+	g[ii] = new Graph(0)
+	g[ii].view(0,1,0,1, int(ii/2)*350+50, ii%2*260+80, 300, 200)
+	g[ii].size(tstart,tstop,$2,$3)
+	g[ii].xaxis()
+	g[ii].yaxis()
+	g[ii].addvar($s1,1,0)
+	g[ii].save_name("graphList[0].")
+	graphList[0].append(g[ii])
+}
+
+proc addtext() { local ii	// define subroutine to add a text graph
+				// addtext("text")
+	ngraph = ngraph+1
+	ii = ngraph-1
+	g[ii] = new Graph()
+	g[ii].size(0,tstop,0,1)
+	g[ii].xaxis(3)
+	g[ii].yaxis(3)
+	g[ii].label(0.1,0.8,$s1)
+	g[ii].save_name("graphList[0].")
+	graphList[0].append(g[ii])
+	text_id = ii
+}
+
+proc addline() {		// to add a comment to the text window
+				// addline("text")
+	g[text_id].label($s1)
+}
+
+if(ismenu==0) {
+  nrnmainmenu()			// create main menu
+  nrncontrolmenu()		// create control menu
+  ismenu=1
+}
+
+
+
+
+//----------------------------------------------------------------------------
+//  transient time
+//----------------------------------------------------------------------------
+
+trans = 00
+
+print " "
+print ">> Transient time of ",trans," ms"
+print " "
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------------
+//  create cluster firing cells, subpopulation A
+//----------------------------------------------------------------------------
+
+print " "
+print "<<==================================>>"
+print "<<            CREATE CELLS          >>"
+print "<<==================================>>"
+print " "
+
+load_file("cluster.tem")		// read geometry file
+
+ncells = 20
+
+objectvar clusterA[ncells]
+for i=0,ncells-1 {
+  fastA[i] = new cluster()
+}
+
+
+
+
+//----------------------------------------------------------------------------
+
+//  create cluster firing cells, subpopulation B
+
+//----------------------------------------------------------------------------
+
+load_file("cluster.tem")		// read geometry file
+
+ncells = 20
+
+objectvar clusterB[ncells]		
+for i=0,ncells-1 {
+  fastB[i] = new cluster()
+}
+
+
+
+
+
+
+
+//----------------------------------------------------------------------------
+//  PROCEDURES FOR SYNAPTIC CONNECTIVITY IN 1-DIM
+//----------------------------------------------------------------------------
+
+print " "
+print "<<==================================>>"
+print "<<     CREATE SYNAPTIC RECEPTORS    >>"
+print "<<==================================>>"
+print " "
+
+func ncon() { local nc		// function to get the number of connections 
+				// argument: interaction diameter
+   nc = 2 * $1 + 1
+   if(nc>ncells) nc = ncells
+   return nc
+}
+
+
+
+/
+/
+/
+/
+/
+/
+/
+
+//----------------------------------------------------------------------------
+//  receptors in synapses from cluster firing A to fast firing B
+//----------------------------------------------------------------------------
+
+objectvar ab[ncells][ncells]  //!!!lehet ez kéne!!!
+
+objref r
+r = new Random()
+//k = 0
+
+for i=0,ncells-1 {
+	
+	//nv = 0
+
+   for j=0,ncells-1 {
+
+	k = int(r.uniform(0,1))
+	if(k < 0.9) {
+
+		ab[i][j] = new fvpre_gabaerg_cluster()
+		clusterB[j].soma ab[i][j].loc(0.5)		// postsynaptic is RE[k] 
+		setpointer ab[i][j].pre, clusterA[i].soma.v	// presynaptic is TC[i]
+	
+	}
+   }
+}
+
+//----------------------------------------------------------------------------
+//  receptors in synapses from cluster firing B to fast firing A
+//----------------------------------------------------------------------------
+
+objectvar ba[ncells][ncells]  //!!!lehet ez kéne!!!
+
+objref r
+r = new Random()
+//k = 0
+
+for i=0,ncells-1 {
+	
+	//nv = 0
+
+   for j=0,ncells-1 {
+
+	k = int(r.uniform(0,1))
+	if(k < 0.9) {
+
+		ba[i][j] = new fvpre_gabaerg_cluster()
+		clusterA[j].soma ba[i][j].loc(0.5)		// postsynaptic is RE[k] 
+		setpointer ba[i][j].pre, clusterB[i].soma.v	// presynaptic is TC[i]
+	
+	}
+   }
+}
+
+//----------------------------------------------------------------------------
+//  receptors in synapses from cluster firing A to fast firing A
+//----------------------------------------------------------------------------
+
+objectvar aa[ncells][ncells]  //!!!lehet ez kéne!!!
+
+objref r
+r = new Random()
+//k = 0
+
+for i=0,ncells-1 {
+	
+	//nv = 0
+
+   for j=0,ncells-1 {
+
+	k = int(r.uniform(0,1))
+	if(k < 0.9) {
+
+		aa[i][j] = new fvpre_gabaerg_cluster()
+		clusterA[j].soma aa[i][j].loc(0.5)		// postsynaptic is RE[k] 
+		setpointer aa[i][j].pre, clusterA[i].soma.v	// presynaptic is TC[i]
+	
+	}
+   }
+}
+
+//----------------------------------------------------------------------------
+//  receptors in synapses from cluster firing B to fast firing B
+//----------------------------------------------------------------------------
+
+objectvar bb[ncells][ncells]  //!!!lehet ez kéne!!!
+
+objref r
+r = new Random()
+//k = 0
+
+for i=0,ncells-1 {
+	
+	//nv = 0
+
+   for j=0,ncells-1 {
+
+	k = int(r.uniform(0,1))
+	if(k < 0.9) {
+
+		bb[i][j] = new fvpre_gabaerg_cluster()
+		clusterB[j].soma bb[i][j].loc(0.5)		// postsynaptic is RE[k] 
+		setpointer bb[i][j].pre, clusterB[i].soma.v	// presynaptic is TC[i]
+	
+	}
+   }
+}
+
+
+
+
+/
+/
+/
+/
+/
+/
+/
+/
+
+
+
+
+//----------------------------------------------------------------------------
+//  setup simulation parameters
+//----------------------------------------------------------------------------
+
+Dt = 0.1
+npoints = 40000
+
+objectvar Sim			// create vector of simulation points
+Sim = new Vector(npoints)
+
+dt = 0.1			// must be submultiple of Dt
+tstart = trans
+tstop = trans + npoints * Dt
+runStopAt = tstop
+steps_per_ms = 1/Dt
+celsius = 36
+v_init = -70
+
+
+
+
+
+
+//----------------------------------------------------------------------------
+//  add graphs
+//----------------------------------------------------------------------------
+
+//addgraph("tcB[0][0].g",0,0.05)
+
+//addgraph("TC[0].soma.o2_iar",0,1)
+//addgraph("TC[0].soma.p1_iar",0,1)
+
+//strdef gtxt
+//for (i=0; i<=40; i=i+10) {
+//	sprint(gtxt,"TC[%d].soma.v(0.5)",i)
+//	addgraph(gtxt,-120,40)
+//	sprint(gtxt,"RE[%d].soma.v(0.5)",i)
+//	addgraph(gtxt,-120,40)
+//}
+
+
+

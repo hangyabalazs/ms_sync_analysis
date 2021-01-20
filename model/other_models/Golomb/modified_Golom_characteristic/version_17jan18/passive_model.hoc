@@ -1,0 +1,58 @@
+SIMTIME = 1000
+current = 0.0025//-0.0017//-0.3//0.1 //(nA)!!!
+color = 1
+tstop = SIMTIME //(ms)
+
+ create soma
+ access soma
+ soma {
+	diam = 30		            // geometry (um)
+	L = 5000/(3.14*diam)			// so that area is about 5000 um2
+	nseg = 1
+	//Ra = 100
+	
+	insert pas
+	e_pas = -60 //(mV)
+	g_pas = 0.0001 //conductance (inverse of resistance) (uS)
+	
+ }
+
+	 objref tvec, vvec
+	tvec = new Vector() 
+	vvec = new Vector()
+	vvec.record(&soma.v(0.5))
+	tvec.record(&t)
+
+//GUI
+objref g //Voltage plot
+g = new Graph()
+g.size(0, tstop, -70, -20)
+objectvar stim
+
+	soma stim = new IClamp(0.5)
+	stim.amp = current
+	stim.dur = 800
+	stim.del = 100
+
+	color = color + 1
+	g.addvar("soma.v(0.5)", color, 0)
+	g.addvar("soma.i(0.5)", color, 0)
+	g.exec_menu("Keep Lines")
+	graphList[0].append(g)
+	run()
+
+
+tstop = SIMTIME
+
+
+	objref outfile1, outfile2
+	outfile1 = new File()
+	outfile2 = new File()
+	outfile1.wopen("time.dat")
+	outfile2.wopen("voltage_Ih.dat")
+	tvec.printf(outfile1)
+	vvec.printf(outfile2)
+	outfile1.close()
+	outfile2.close()
+
+//quit()
