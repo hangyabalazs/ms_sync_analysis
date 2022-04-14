@@ -43,11 +43,11 @@ for it = 1:length(shankIds) %iterate trough all recordings
     histogram(noisePhases(TS(isNoisy(TS)==1)),edges,'Normalization','probability','DisplayStyle','stairs');
     histogram(otherPhases(TS(isOther(TS)==1)),edges,'Normalization','probability','DisplayStyle','stairs');
     subplot(3,1,2), hold on
-    correlation(TS(isNoisy(TS)==1),TS(isNoisy(TS)==1),[0,0,1]);
-    correlation(TS(isOther(TS)==1),TS(isOther(TS)==1),[1,0,0]);
+    correlation(TS(isNoisy(TS)==1),TS(isNoisy(TS)==1),true,[0,0,1]);
+    correlation(TS(isOther(TS)==1),TS(isOther(TS)==1),true,[1,0,0]);
     subplot(3,1,3), hold on
-    correlation(TS(stim(TS)==1),TS(stim(TS)==1),[0,0,1],NSR/4,1,'integrating');
-    correlation(TS(stim(TS)==0),TS(stim(TS)==0),[1,0,0],NSR/4,1,'integrating');
+    correlation(TS(stim(TS)==1),TS(stim(TS)==1),true,[0,0,1],NSR/4,1,'integrating');
+    correlation(TS(stim(TS)==0),TS(stim(TS)==0),true,[1,0,0],NSR/4,1,'integrating');
     %     close
 end
 end

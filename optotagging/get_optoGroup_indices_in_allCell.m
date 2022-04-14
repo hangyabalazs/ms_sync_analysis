@@ -20,7 +20,6 @@ function [rowIds,cellBNames,isDel,taggInd] = get_optoGroup_indices_in_allCell(op
 %   Date: 01/09/2020
 
 global RESULTDIR
-global PREPROCDIR
 
 if ~exist('taggInx','var') taggInx = 0.01; end
 
