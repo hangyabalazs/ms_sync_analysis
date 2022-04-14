@@ -76,31 +76,31 @@
 
 %Example cells for EXAMPLE_CELLS_PLOT:
 %Rat
-% IDs = {20100616,9,2,2;20100616,9,2,4;20100616,9,3,8}; tWindow = [832,844]; %CD
-% IDs = {20100728,3,4,5;20100728,3,4,9;20100728,3,4,10}; tWindow = [1284,1296]; %CTB
-% IDs = {20100304,2,1,4;20100304,2,1,3;20100304,2,2,3}; tWindow = [679,691]; %CTT
-% IDs = {20100728,4,4,10;20100728,4,4,11;20100728,4,4,13}; tWindow = [1231,1243]; %DT
-% IDs = {20100728,9,2,7;20100728,9,4,10;20100728,9,4,7}; tWindow = [656,668]; %NT
+% IDs = {20100616,9,2,2;20100616,9,2,4;20100616,9,3,8}; tWindow = [832,844]; acgYLims = [0,0.0014]; phaseYLims = [0,0.1]; %CD
+% IDs = {20100728,3,4,5;20100728,3,4,9;20100728,3,4,10}; tWindow = [1284,1296]; acgYLims = [0,0.0006]; phaseYLims = [0,0.2]; %CTB
+% IDs = {20100304,2,1,4;20100304,2,1,3;20100304,2,2,3}; tWindow = [679,691]; acgYLims = [0,0.0004]; phaseYLims = [0,0.1]; %CTT
+% IDs = {20100728,4,4,10;20100728,4,4,11;20100728,4,4,13}; tWindow = [1231,1243]; acgYLims = [0,0.0006]; phaseYLims = [0,0.2]; %DT
+% IDs = {20100728,9,2,7;20100728,9,4,10;20100728,9,4,7}; tWindow = [656,668]; acgYLims = [0,0.0005]; phaseYLims = [0,0.1]; %NT
 %Amouse
-% IDs = {201801082,1,1,21;201801082,1,1,79;201801082,1,1,85}; tWindow = [311,323]; %CD
-% IDs = {20171208,12,1,55;20171208,12,1,69;20171208,12,1,171}; tWindow = [321,333]; %CTB
-% IDs = {20170608,45,1,7;20170608,45,1,58;20170608,45,1,74}; tWindow = [306,318]; %CTT
-% IDs = {201801082,1,1,5;201801082,1,1,8;201801082,1,1,122}; tWindow = [309,321]; %DT
-% IDs = {20170608,45,1,2;20170608,45,1,25;20170608,45,1,84}; tWindow = [307,320]; %NT
+% IDs = {201801082,1,1,21;201801082,1,1,79;201801082,1,1,85}; tWindow = [311,323]; acgYLims = [0,0.0006]; phaseYLims = [0,0.15]; %CD
+% IDs = {20171208,12,1,55;20171208,12,1,69;20171208,12,1,171}; tWindow = [321,333]; acgYLims = [0,0.0004]; phaseYLims = [0,0.12]; %CTB
+% IDs = {20170608,45,1,7;20170608,45,1,58;20170608,45,1,74}; tWindow = [306,318]; acgYLims = [0,0.0007]; phaseYLims = [0,0.07]; %CTT
+% IDs = {201801082,1,1,5;201801082,1,1,8;201801082,1,1,122}; tWindow = [309,321]; acgYLims = [0,0.0005]; phaseYLims = [0,0.15]; %DT
+% IDs = {20170608,45,1,2;20170608,45,1,25;20170608,45,1,84}; tWindow = [307,320]; acgYLims = [0,0.0006]; phaseYLims = [0,0.09]; %NT
 %Fmouse
-% IDs = {20161695,1824,4,3;20161695,1824,4,22;20161695,1824,4,65}; tWindow = [226,238]; %CTB
-% IDs = {20161989,139140,3,19;20161989,139140,3,59;20161989,139140,3,66}; tWindow = [1247.9,1259.9]; %CTT
-% IDs = {20161750,5054,2,32;20161750,5054,2,68;20161750,5054,3,65}; tWindow = [868,870]; %NT
+% IDs = {20161695,1824,4,3;20161695,1824,4,22;20161695,1824,4,65}; tWindow = [226,238]; acgYLims = [0,0.00055]; phaseYLims = [0,0.12]; %CTB
+% IDs = {20161989,139140,3,19;20161989,139140,3,59;20161989,139140,3,66}; tWindow = [1247.9,1259.9]; acgYLims = [0,0.00045]; phaseYLims = [0,0.08]; %CTT
+% IDs = {20161750,5054,2,32;20161750,5054,2,68;20161750,5054,3,65}; tWindow = [858,870]; acgYLims = [0,0.0003]; phaseYLims = [0,0.1]; %NT
 %PVR: 
-% IDs = {20180821,1,4,23}; tWindow = [296,308];
+% IDs = {20180821,1,4,23}; tWindow = [296,308]; acgYLims = [0,0.00044]; phaseYLims = [0,0.15];
 % IDs = {20180821,1,4,23;20180821,1,4,34;20180821,1,4,38}; tWindow = [280,320];
 % IDs = {20180821,2,3,43;20180821,2,2,27;20180821,2,4,23}; tWindow = [280,320];%4,2; 2,42 
 % IDs = {20180821,3,4,2;20180821,3,4,17;20180821,3,4,1}; tWindow = [395,435];%2,0; 4,48
 %VGA:
-% IDs = {20190512,5,3,34}; tWindow = [298,310];
+% IDs = {20190512,5,3,34}; tWindow = [298,310]; acgYLims = [0,0.00044]; phaseYLims = [0,0.15];
 % IDs = {20190512,4,1,2;20190512,4,2,42}; tWindow = [270,310];
 %VGL:
-% IDs = {20190510,6,4,65}; tWindow = [270,282];
+% IDs = {20190510,6,4,65}; tWindow = [270,282]; acgYLims = [0,0.00044]; phaseYLims = [0,0.15];
 % IDs = {20180906,8,4,16;20180906,8,4,36;20180906,8,4,39}; tWindow = [550,590];
 % IDs = {20190510,7,2,64;20190510,7,4,14;20190510,7,2,15}; tWindow = [550,590];
 %20190510,7,3,25;20190510,7,4,12;20190510,7,3,24
@@ -123,9 +123,9 @@
 % issave = true;
 % isPlotCos = true;
 % isPlotHistogram = true;
-% sourcefolderName = 'C:\Users\Barni\ONE_DRIVE\publications\KOKI\Theta_synchronization\figures\5_model\model_synchronization\scatter\reduced\fig';
+% sourcefolderName = 'C:\Users\Barni\ONE_DRIVE\kutatas\KOKI\MS_sync\FIGURE7\rw1\parameter_space';
 % targetfolderName = '';
-% saveFormat = 'png';
+% saveFormat = 'svg';
 % funcCallDef = 'MakeStimEvents2_p(folderPaths{it1});';
 % resDir = 'D:\OPTOTAGGING\KATI_cholinergic_tagged\DATADIR';
 % levelId = 2;
@@ -134,6 +134,9 @@
 % resPath2 = 'final_analysis_2threshold';
 % cellId = 'VGL01_180906b_1.59';%'PVR02_180821d_4.7';
 % %
+%  resPaths = {'D:\ANA_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
+%      'D:\FREE_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
+%      'D:\ANA_RAT\analysis\final_analysis\PACEMAKER_SYNCH'};
 %  resPaths = {'D:\ANA_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
 %      'D:\FREE_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
 %      'D:\ANA_RAT\analysis\final_analysis\PACEMAKER_SYNCH';...
@@ -145,5 +148,5 @@
 %  resPaths = {'D:\ANA_RAT\analysis\final_analysis\PACEMAKER_SYNCH';...
 %      'D:\ANA_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
 %      'D:\FREE_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
-%       'D:\MODEL\analysis\final_analysis\PACEMAKER_SYNCH'};%;...
-% 	 'D:\OPTOTAGGING\analysis\final_analysis\PACEMAKER_SYNCH'};
+%       'D:\MODEL\analysis\final_analysis\PACEMAKER_SYNCH';...
+%  	 'D:\OPTOTAGGING\analysis\final_analysis\PACEMAKER_SYNCH'};

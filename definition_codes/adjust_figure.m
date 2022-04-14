@@ -9,12 +9,13 @@ function adjust_figure()
 %   Institute of Experimental Medicine, MTA
 %   Date: 31/10/2020
 
-% limits=[0,10];xlim(limits),ylim(limits),set(gca, 'xtick', [limits(1),limits(2)/2,limits(2)]);set(gca, 'xticklabel', {limits(1),'',limits(2)}),set(gca, 'ytick', [limits(1),limits(2)/2,limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}), setmyplot_balazs, hold on, plot(limits,limits,'k')
-% limits=[0,6e-4];ylim(limits),set(gca, 'ytick', [limits(1),mean(limits),limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}),set(gca, 'xtick', [-2000,-1000,0,1000,2000]);set(gca, 'xticklabel', {-2,'',0,'',2}), setmyplot_balazs
+% limits=[-1.5,3];xlim(limits),ylim(limits),set(gca, 'xtick', [limits(1),mean(limits),limits(2)]);set(gca, 'xticklabel', {limits(1),'',limits(2)}),set(gca, 'ytick', [limits(1),limits(2)/2,limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}), setmyplot_balazs, hold on, plot(limits,limits,'k')
+% limits=[-1.5,3];ylim(limits),set(gca, 'ytick', [limits(1),mean(limits),limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}),set(gca, 'xtick', [-2000,-1000,0,1000,2000]);set(gca, 'xticklabel', {-2,'',0,'',2}), setmyplot_balazs
 
 xlabel(''), set(gca, 'xticklabel',{})
 ylabel(''), set(gca, 'yticklabel',{})
 title('')
+
 % Set x axis:
 % set(gca, 'xtick',[2000,2500,3000,3500,4000])
 % set(gca, 'xticklabel',{'-1','','0','','1'})
@@ -44,7 +45,7 @@ title('')
 % allLines = findall(gca, 'Type', 'Line');
 % allLines([7,14]) = [];
 % delete(allLines);
-% setmyplot_balazs
+setmyplot_balazs
 % set(gca,'FontSize',15,'LineWidth',0.75);
 % set(gca,'TickDir','out','box','off');
 % set(gcf, 'Position', [300,100,200,200]); % set figure POSITION and SIZE
