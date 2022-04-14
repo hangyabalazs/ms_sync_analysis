@@ -1,8 +1,9 @@
 function extract_points_from_plot()
 % EXTRACT_POINTS_FROM_PLOT Extracts given objects from the current plot.
 
-h = findobj(gca,'Type','scatter');
+% h = findobj(gca,'Type','scatter');
 % h = findobj(gca,'Type','Line');
+h = getimage();
 xPoints = get(h,'Xdata');
 yPoints = get(h,'Ydata');
 % comp = get(gca,'children');
