@@ -1,9 +1,11 @@
-function rowIds = get_rhGroup_indices_in_allCell(rhythmGroup)
+function rowIds = get_rhGroup_indices_in_allCell(rhythmGroup,xRange)
 %GET_RHGROUP_INDICES_IN_ALLCELL Return rowIds of a given cell group.
 %   ROWIDS = GET_RHGROUP_INDICES_IN_ALLCELL(RHYTHMGROUP) get rowIds 
 %   (in allCell matrix) of cells belonging to the given rhythmicity group.
 %   Parameter:
 %   RHYTHMGROUP: string, specifying the rhythmicity group (e.g. 'CTB').
+%   XRANGE: vector, optional, specifying which rows of ALLCELL matrix to
+%   consider.
 %   ROWIDS: vector, containing cells' row numbers in ALLCELL matrix.
 %
 %   See also GENERATE_RH_GROUPS, BUILD_ALLCELL,
@@ -28,4 +30,8 @@ rhIndex = find(ismember(rhGroups(:,1),{rhythmGroup})); % find rhythmicity groups
 
 % Find indices (in allCell matrix) of cells belonging to STR group
 rowIds = find(allCell(:,mO('rhGroup')) == rhIndex);
+
+if exist('xRange')
+    rowIds(~ismember(rowIds,xRange)) = [];
+end
 end

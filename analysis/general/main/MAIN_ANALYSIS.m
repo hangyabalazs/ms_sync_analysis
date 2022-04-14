@@ -77,6 +77,18 @@ execute_activeRecIds(funcCallDef,'cell');
 funcCallDef = 'cell_burst_parameters(animalId,recordingId,shankId,cellId,''issave'',true)';
 execute_activeRecIds(funcCallDef,'cell');
 
+%% Sharp Wave Ripple complexes (optional)
+% %   Save resampled pyramidal layer channel 
+% %   (e.g.: [animalId,'_',recordingId,'_pyramidal.mat'] in PREPROCDIR\animalId\recordingId directory).
+% funcCallDef = 'save_hippocampal_field(animalId,recordingId,true,true)';
+% execute_activeRecIds(funcCallDef,'rec');
+% %   Detect SWR segments:
+% funcCallDef = 'SWR_detector(animalId,recordingId,true,true);';
+% execute_activeRecIds(funcCallDef,'rec');
+% %   Calculate SWR associated firing rates for MS units:
+% funcCallDef = 'cell_SWR_fr(animalId,recordingId,shankId,cellId,true)';
+% execute_activeRecIds(funcCallDef,'cell');
+
 %% VII. Build allCell matrix:
 %   Collect all cells' features to a common matrix (allCell). Define rhythmicity
 %   during theta/ delta.

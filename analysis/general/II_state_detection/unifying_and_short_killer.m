@@ -4,10 +4,11 @@ function [logicVector,s1,s2] = unifying_and_short_killer(logicVector,windowS1,wi
 %   short segments (both theta and delta) in a logical vector.
 %   Parameters:
 %   LOGICVECTOR is a logical vector representing two states (0 or 1).
-%   WINDOWS1: window size (neglect 0s segments shorter than this value)
+%   WINDOWS1: window size (neglect 0 (delta) segments shorter than this
+%   value, e.g. 1*NSR).
 %   (e.g. 5). 
-%   WINDOWS2: window size (neglect 1s segments shorter than this
-%   value) (e.g. 5).
+%   WINDOWS2: window size (neglect 1 (theta) segments shorter than this
+%   value, e.g. 1*NSR).
 %   S1: vector, time points of 0 to 1 transitions.
 %   S2: vector, time points of 1 to 0 transitions.
 %

@@ -60,11 +60,12 @@ for it = 1:numel(ccgMatrixIds) % iterate trough all connection types
         cellId1 = allCell(pairIds(1),mO('cellId'));
         cellId2 = allCell(pairIds(2),mO('cellId'));
 
-        [thetaCcg,deltaCcg] = cross_correlation(animalId,recordingId,...
+        [thetaCcg,deltaCcg,thsumccr,desumccr] = cross_correlation(animalId,recordingId,...
             [shankId1,shankId2],[cellId1,cellId2],'maxlag',maxlag,...
             'binsize',binsize,'isPlot',false);
         actCcgsTh(:,it2) = thetaCcg;
         actCcgsDe(:,it2) = deltaCcg;
+%         sum(((thetaCcg - mean(thetaCcg))*thsumccr).^2);
     end
     ccgMatrixTh{it} = actCcgsTh;
     ccgMatrixDe{it} = actCcgsDe;

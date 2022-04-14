@@ -1,4 +1,4 @@
-function signRanks = plot_synchronization_theories(resPaths)
+function [stats, Wplus] = plot_synchronization_theories(resPaths)
 %PLOT_SYNCHRONIZATION_THEORIES Plots synchronization statistics for
 %datasets.
 %   SIGNRANKS = PLOT_SYNCHRONIZATION_THEORIES(RESPATHS) plots 6 measures
@@ -14,7 +14,7 @@ function signRanks = plot_synchronization_theories(resPaths)
 %   SIGNRANKS: matrix, paired signrank statistic values (rows: theories,
 %   columns: datasets).
 %
-%   See also GROUP_SYNCHRONIZATION, DATASET_COLORS.
+%   See also GROUP_SYNCHRONIZATION, DATASET_COLORS, WILCOXON_P_WPLUS.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -25,7 +25,8 @@ if nargin == 0
 end
 
 theories = {'firing_rates';'acg_theta_peaks';'rhythmicity_frequencies';...
-    'intraburst_interspike_interval';'theta_skipping';'frequency_synchronization'};
+    'intraburst_interspike_interval';'theta_skipping';...
+    'frequency_synchronization';'rh_frequency_deviations_abs'};
 nTheories = numel(theories);
 nDataSets = numel(resPaths);
 
@@ -39,7 +40,8 @@ DSNames = {'rat: ';'amouse: ';'fmouse: ';'pooled: ';'model: ';'opto: '}; % all d
 DSNames(cellfun(@isempty,{ratInx,amouseInx,fmouseInx,nDataSets+1,modelInx,optoInx})) = []; % clear missing datasets' names
 
 %% Collect all results from all datasets, calculate statistics:
-signRanks = zeros(nTheories,nDataSets+1);
+stats = zeros(nTheories,nDataSets+1); % wilcoxon signed rank stat: p values
+Wplus = zeros(nTheories,nDataSets+1); % wilcoxon signed rank stat: w+ values
 tTests = zeros(nTheories,nDataSets+1);
 nCells = zeros(nTheories,nDataSets+1);
 ThDeMAll = cell(nTheories,1);
@@ -50,7 +52,10 @@ for it1 = 1:nTheories % go trough synchronization theories:
         load(fullfile(resPaths{it2},theories{it1})); % load results
         nPoints = numel(thPoints);
         ThDeM(cnt:cnt+nPoints-1,:) = [repmat(it2,nPoints,1),thPoints,dePoints]; % store results
-        signRanks(it1,it2) = signrank(thPoints,dePoints); % statistics: paired signrank
+        
+        % Wilcoxon signed-rank test
+        [stats(it1,it2),Wplus(it1,it2)] = wilcoxon_p_wplus(thPoints,dePoints);
+        
         [~,pTTest] = ttest(thPoints,dePoints); % statistics: paired t-test
         tTests(it1,it2) = pTTest;
         nCells(it1,it2) = nPoints;
@@ -63,9 +68,12 @@ for it1 = 1:nTheories % go trough synchronization theories:
     end
     ThDeM(cnt:end,:) = [];
     ThDeMAll{it1} = ThDeM;
+    
     % Pooled statistics:
     poolInd = find(ismember(ThDeM(:,1),[ratInx,amouseInx,fmouseInx]));
-    signRanks(it1,end) = signrank(ThDeM(poolInd,2),ThDeM(poolInd,3)); % statistics: paired signrank
+    % Wilcoxon signed-rank test
+    [stats(it1,end),Wplus(it1,end)] = wilcoxon_p_wplus(ThDeM(poolInd,2),ThDeM(poolInd,3));
+    
     [~,pTTest] = ttest(ThDeM(poolInd,2),ThDeM(poolInd,3)); % statistics: paired t-test
     tTests(it1,end) = pTTest;
     nCells(it1,end) = numel(poolInd);
@@ -74,7 +82,7 @@ end
 %% Plot results:
 for it1 = 1:nTheories % go trough synchronization theories:
     figure('Position',[10,50,500,500]), hold on
-    xlabel('theta'), ylabel('delta')
+    xlabel('Theta'), ylabel('Delta')
     for it2 = 1:nDataSets % plot each datasets:
         [sColor,symbol,markerSize] = dataset_colors(resPaths{it2});
         ind = find(ThDeMAll{it1}(:,1)==it2);
@@ -87,11 +95,12 @@ for it1 = 1:nTheories % go trough synchronization theories:
     xlim([minV,maxV]),ylim([minV,maxV]), axis equal
     line([minV,maxV],[minV,maxV],'Color',[1,0,0],'LineStyle','--')
     
-    title([[theories{it1},' (signed rank, t tests, #cells)'];
+    title([[theories{it1},' (signed rank (or f-test), t tests, #cells)'];
         strcat(DSNames,...
-        num2str(signRanks(it1,[ratInx,amouseInx,fmouseInx,nDataSets+1,modelInx,optoInx]).'),{', '},...
+        num2str(stats(it1,[ratInx,amouseInx,fmouseInx,nDataSets+1,modelInx,optoInx]).'),{', '},...
         num2str(tTests(it1,[ratInx,amouseInx,fmouseInx,nDataSets+1,modelInx,optoInx]).'),{', '},...
         num2str(nCells(it1,[ratInx,amouseInx,fmouseInx,nDataSets+1,modelInx,optoInx]).'))]);
+    %     setmyplot_balazs
     
     % Real data, boxplot
     figure('Position',[510,50,150,500]); hold on, title('Pooled data')

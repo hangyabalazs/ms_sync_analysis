@@ -36,6 +36,10 @@ if isequal(PROJECTID,'MODEL') & contains(WORKFOLDER,{'parameter_space','variance
     mkdir(fullfile(RESULTDIR,'expected_segments_bursts'));
 end
 mkdir(fullfile(RESULTDIR,'MS_cell_bursts'));
+% For SWR analysis:
+mkdir(fullfile(RESULTDIR,'SWR_detection','pngs'));
+mkdir(fullfile(RESULTDIR,'SWR_detection','SWR_segments'));
+mkdir(fullfile(RESULTDIR,'SWR_detection','MS_cell_SWR_firing_rates'));
 % For saving allCell matrix:
 mkdir(fullfile(RESULTDIR,'cell_features'));
 % For rhythmicity groups:

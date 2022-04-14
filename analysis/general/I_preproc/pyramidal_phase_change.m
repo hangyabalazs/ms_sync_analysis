@@ -12,7 +12,8 @@ function pyramidal_phase_change(animalIdN,recordingIdN,tWindow)
 %   RECORDINGIDN: string (e.g. '3').
 %   TWINDOW: 1x2 vector, (e.g. [366,376]).
 %
-%   See also MAIN_ANALYSIS, SAVE_HIPPOCAMPAL_FIELD, HIPPO_STATE_DETECTION.
+%   See also MAIN_ANALYSIS, SAVE_HIPPOCAMPAL_FIELD, SAVE_HIPPOCAMPAL_FIELD2, 
+%   HIPPO_STATE_DETECTION.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -48,8 +49,8 @@ end
 % Theta filter:
 firOrder = 1024;
 if size(allCH)<firOrder*3 
-    firOrder = 64,
-end %short data -> firOrder would be too large
+    firOrder = 64, % short data -> firOrder would be too large
+end 
 thetaFilter = fir1(firOrder,HPTHBAND/(NSR/2),'bandpass');
 thetaFeeg = filtfilt(thetaFilter,1,allCH);
 

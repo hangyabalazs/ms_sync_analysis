@@ -48,7 +48,7 @@ isPlot = p.Results.isPlot;
 isSuffT = p.Results.isSuffT;
 
 if nargin == 0
-    eval([PROJECTID,'_variables']); %animalId, recordingId, shankIds, cellIds (ccgWindow,issave,isPlot,isSuffT) definitions
+    variable_defintions; %animalId, recordingId, shankIds, cellIds (ccgWindow,issave,isPlot,isSuffT) definitions
 end
 
 % Load theta logical vector (define theta/delta segments):
@@ -90,7 +90,7 @@ end
 
 % Colors:
 if isPlot
-    f1 = figure('Position', [100, 100, 1600, 800]);
+    f1 = figure('Position', [100, 100, 1200, 600]);
     acgColour1 = [0, 0.4470, 0.7410];
     acgColour2 = [0.8500, 0.3250, 0.0980];
 else %avoid ploting
@@ -101,16 +101,16 @@ end
 % Autocorrelations:
 if isPlot
     a1 = subplot(3, 1, 1); hold on,
-    correlation(thetaActPattern1,thetaActPattern1,acgColour1,maxlag,binsize,'integrating');
-    correlation(deltaActPattern1,deltaActPattern1,acgColour2,maxlag,binsize,'integrating');
+    correlation(thetaActPattern1,thetaActPattern1,true,acgColour1,maxlag,binsize,'integrating');
+    correlation(deltaActPattern1,deltaActPattern1,true,acgColour2,maxlag,binsize,'integrating');
     a2 = subplot(3, 1, 3); hold on,
-    correlation(thetaActPattern2,thetaActPattern2,acgColour1,maxlag,binsize,'integrating');
-    correlation(deltaActPattern2,deltaActPattern2,acgColour2,maxlag,binsize,'integrating');
+    correlation(thetaActPattern2,thetaActPattern2,true,acgColour1,maxlag,binsize,'integrating');
+    correlation(deltaActPattern2,deltaActPattern2,true,acgColour2,maxlag,binsize,'integrating');
     a3 = subplot(3, 1, 2); hold on,
 end
 
 % Cross correlation under theta:
-[thetaCcg,thsumccr,clag] = correlation(thetaActPattern1,thetaActPattern2,acgColour1,maxlag,binsize,'integrating');
+[thetaCcg,thsumccr,clag] = correlation(thetaActPattern1,thetaActPattern2,false,acgColour1,maxlag,binsize,'integrating');
 % Cross correlation under delta:
-[deltaCcg,desumccr,clag] = correlation(deltaActPattern1,deltaActPattern2,acgColour2,maxlag,binsize,'integrating');
+[deltaCcg,desumccr,clag] = correlation(deltaActPattern1,deltaActPattern2,false,acgColour2,maxlag,binsize,'integrating');
 end

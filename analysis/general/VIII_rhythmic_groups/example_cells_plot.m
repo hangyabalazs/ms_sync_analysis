@@ -1,4 +1,4 @@
-function example_cells_plot(IDs,tWindow)
+function example_cells_plot(IDs,tWindow,acgYLims,phaseYLims)
 %EXAMPLE_CELLS_PLOT plots 3 example MS unit activity, properties, and hippo
 %LFP.
 %   EXAMPLE_CELLS_PLOT(IDS,TWINDOW) plots 3 MS units activities (from the 
@@ -9,6 +9,10 @@ function example_cells_plot(IDs,tWindow)
 %   cellId) of MS cells (e.g. {20180821,1,4,23;20180821,1,4,34;20180821,1,4,38}); 
 %   or a 1x3 vector containing rowIds (in allCell).
 %   TWINDOW: 1x2 vector, (e.g. [832,844]).
+%   ACGYLIMS: 1x2 vector, controlling y axis limits on individual cells' 
+%   acg plots (e.g.: [0,0.0006]).
+%   PHASEYLIMS: 1x2 vector, controlling y axis limits on individual cells' 
+%   phase plots (e.g.: [0,0.15]).
 %
 %   See also CELL_GROUPS, CELL_RHYTHMICITY, CELL_PHASE_PREFERENCE.
 
@@ -26,7 +30,7 @@ load(fullfile(RESULTDIR, 'cell_features','allCell.mat'), 'allCell');
 load(fullfile(RESULTDIR, 'cell_features','allCellMap.mat'),'mO');
 
 if nargin == 0
-    variable_definitions; %IDs,tWindow definitions
+    variable_definitions; %IDs,tWindow,acgYLims,phaseYLim definitions
 end
 
 if iscell(IDs)
@@ -56,6 +60,7 @@ for it = 1:length(rowIds)
     subplot(3,5,3+(it-1)*5), hold on, title([num2str(shankId),' ',num2str(cellId)])
     plot(allCell(rowIds(it),mO('thetaAcgFirst'):mO('thetaAcgLast')))
     plot(allCell(rowIds(it),mO('deltaAcgFirst'):mO('deltaAcgLast')))
+    ylim(acgYLims)
     if isequal(PROJECTID,'FREE_MOUSE') 
         xlim([2000,4000]); 
     else
@@ -64,7 +69,8 @@ for it = 1:length(rowIds)
     
     % Two-cycle phase histogram:
     subplot(3,5,4+(it-1)*5);
-    twocycles_phaseHistogram(animalId,recordingId,shankId,cellId);
+    twocycles_phaseHistogram({animalId,recordingId,shankId,cellId});
+    ylim(phaseYLims)
     
     % Firing rates:
     thetaFr = round(allCell(rowIds(it),mO('thetaFr')),2);

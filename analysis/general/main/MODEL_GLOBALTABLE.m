@@ -3,7 +3,7 @@
 %
 %   See also ANA_RAT_GLOBALTABLE, ANA_MOUSE_GLOBALTABLE, 
 %   FREE_MOUSE_GLOBALTABLE, OPTO_GLOBALTABLE, MODEL_GLOBALTABLE_PAR, 
-%   MODEL_GLOBALTABLE_VAR.
+%   MODELGLOBALTABLE_DELAY, MODEL_GLOBALTABLE_VAR.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -13,7 +13,7 @@ clear all
 % close all
 
 % % Add code folder to path
-codepath = 'D:\MS_sync_codes';
+codepath = 'C:\Users\Barni\Documents\MSsync_codes';
 % addpath(genpath(codepath));
 
 global PROJECTID
@@ -26,6 +26,7 @@ ROOTDIR = fullfile('D:',PROJECTID);
 global WORKFOLDER
 WORKFOLDER = 'final_analysis';
 % WORKFOLDER = 'final_analysis_fig_5E';
+% WORKFOLDER = 'for_review\1_cell';
 
 global RESULTDIR
 RESULTDIR = fullfile(ROOTDIR,'analysis',WORKFOLDER);
@@ -42,6 +43,7 @@ if ~exist(fullfile(RESULTDIR,'parameters.mat'))
     
     global DATADIR
     DATADIR = fullfile('D:',PROJECTID,'DATA','network');
+%     DATADIR = fullfile('D:',PROJECTID,'DATA','for_review\1_cell');
     global PREPROCDIR
     PREPROCDIR = fullfile(RESULTDIR,'PREPROC');
     

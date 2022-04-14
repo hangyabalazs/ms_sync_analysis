@@ -13,7 +13,7 @@ clear all
 % close all
 
 % % Add code folder to path
-codepath = 'D:\MS_sync_codes';
+codepath = 'C:\Users\Barni\Documents\MSsync_codes';
 % addpath(genpath(codepath));
 
 global PROJECTID
@@ -38,7 +38,7 @@ if ~exist(fullfile(RESULTDIR,'parameters.mat'))
     if ~exist(fullfile(RESULTDIR,'codes'))
         status = mkdir(fullfile(RESULTDIR,'codes'));
     end
-    copyfile(codepath, fullfile(RESULTDIR, 'codes'));
+%     copyfile(codepath, fullfile(RESULTDIR, 'codes'));
     
     % Directories:
     global DATADIR

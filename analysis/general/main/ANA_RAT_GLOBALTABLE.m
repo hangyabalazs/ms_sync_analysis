@@ -13,7 +13,7 @@ clear all
 % close all
 
 % Add code folder to path
-codepath = 'D:\MS_sync_codes';
+codepath = 'C:\Users\Barni\Documents\MSsync_codes';
 % addpath(genpath(codepath));
 
 global PROJECTID

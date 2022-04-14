@@ -41,14 +41,16 @@ end
 thetaFilter = fir1(firOrder,thBand/(nsr/2),'bandpass');
 thetaFeeg = filtfilt(thetaFilter,1,fieldPot);
 thetaSFeeg = (thetaFeeg - mean(thetaFeeg))./stdNorm; % standardize feeg
+% thetaSFeeg = thetaFeeg;
 thetaTransf = hilbert(thetaSFeeg); % hilbert transform to frequency domain
 thetaAmp = abs(thetaTransf); % theta amplitude
 
 % Filter in delta band:
 deltaFilter = fir1(firOrder,deBand/(nsr/2),'bandpass');
 deltaFeeg = filtfilt(deltaFilter,1,fieldPot);
-deltaDFeeg = (deltaFeeg - mean(deltaFeeg))./stdNorm;
-deltaTransf = hilbert(deltaDFeeg);
+deltaSFeeg = (deltaFeeg - mean(deltaFeeg))./stdNorm;
+% deltaSFeeg = deltaFeeg;
+deltaTransf = hilbert(deltaSFeeg);
 deltaAmp = abs(deltaTransf);
 
 % Theta-delta ratio
@@ -95,14 +97,15 @@ else
     theta(overlap==1) = 0;  % non-overlaping theta, delta binary vectors
 end
 
-%Plot:
+% Plot:
 timeVec = 1/nsr:1/nsr:length(fieldPot)/nsr; % time vector
 xlim([timeVec(1),timeVec(end)])
 standardizedField = (fieldPot - mean(fieldPot))./stdNorm; % just for visualization...
+% standardizedField = fieldPot;
 hold on
 plot(timeVec, standardizedField, 'k')
 plot(timeVec, thetaSFeeg, 'Color', [0, 0.4470, 0.7410])
-plot(timeVec, deltaDFeeg, 'Color', [0.8500, 0.3250, 0.0980])
+plot(timeVec, deltaSFeeg, 'Color', [0.8500, 0.3250, 0.0980])
 domTh = theta*thratioTresh; % just for visualization...
 domTh(ths1) = NaN; % just for visualization...
 domTh(ths2) = NaN; % just for visualization...
@@ -111,7 +114,7 @@ domDe = delta*deratioTresh; % just for visualization...
 domDe(des1) = NaN; % just for visualization...
 domDe(des2) = NaN; % just for visualization...
 % plot(timeVec, domDe,'Color',[0.6,0,0],'LineWidth',2)
-plot(timeVec, ratioSFeeg, 'g')
+plot(timeVec, ratioSFeeg,'g')
 % plot(timeVec, (ratioSFeeg + ones(size(ratioSFeeg))), 'g') %shift the plot to make it visible
 yLims = prctile(standardizedField,[0.1, 99.9]); %adjust y axes
 if yLims(1) ~= yLims(2) & ~isnan(yLims(1))
@@ -119,6 +122,7 @@ if yLims(1) ~= yLims(2) & ~isnan(yLims(1))
 end
 % legend('standardized field', 'st. and theta filtered field', 'st. and delta filtered field', 'theta', 'averaged ratio');
 plot([timeVec(1),timeVec(1)+1],[0,0],'k','LineWidth',2) % 1 s bar
+% ylim([-0.5,1.5])
 plot([timeVec(1),timeVec(1)],[0,1/(stdNorm*0.000195)],'k','LineWidth',2) % 1 mV bar
 xlabel('Seconds');
 hold off;

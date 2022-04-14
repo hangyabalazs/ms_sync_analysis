@@ -44,8 +44,8 @@ for it = 1:nCell
 end
 
 hold on
-stairs([PHASEHISTEDGES,PHASEHISTEDGES(2:end)+2*pi],[mean(allThHist),mean(allThHist),mean(allThHist(end))])
-stairs([PHASEHISTEDGES,PHASEHISTEDGES(2:end)+2*pi],[mean(allDeHist),mean(allDeHist),mean(allDeHist(end))])
+stairs([PHASEHISTEDGES,PHASEHISTEDGES(2:end)+2*pi],[mean(allThHist,1),mean(allThHist,1),mean(allThHist(end),1)])
+stairs([PHASEHISTEDGES,PHASEHISTEDGES(2:end)+2*pi],[mean(allDeHist,1),mean(allDeHist,1),mean(allDeHist(end),1)])
 xlim([-pi,3*pi])
 % histogram('BinEdges',[PHASEHISTEDGES, PHASEHISTEDGES(2:end)+2*pi],...
 %     'BinCounts',[thetaHistValues,thetaHistValues],'DisplayStyle','stairs','EdgeAlpha',0)

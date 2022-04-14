@@ -66,11 +66,15 @@ for it1 = 1:numel(rowIds)
     smThetaAcgs(:,it1) = conv(thetaAcg,conWindow,'same');
     [thPeakVal(it1),thLoc] = max(smThetaAcgs(thLags,it1));
     thPeakLoc(it1) = thLoc + round(NSR/frBands(1,2))-1;
+%     [thPeakVal(it1),thLoc] = max(smThetaAcgs(deLags,it1));
+%     thPeakLoc(it1) = thLoc + round(NSR/frBands(2,2))-1;
     % Delta:
     deltaAcg = allCell(rowIds(it1),mO('deltaAcgFirst'):mO('deltaAcgLast'));
     smDeltaAcgs(:,it1) = conv(deltaAcg,conWindow,'same');
     [dePeakVal(it1),deLoc] = max(smDeltaAcgs(deLags,it1));
     dePeakLoc(it1) = deLoc + round(NSR/frBands(2,2))-1;
+%     [dePeakVal(it1),deLoc] = max(smDeltaAcgs(thLags,it1));
+%     dePeakLoc(it1) = deLoc + round(NSR/frBands(1,2))-1;
 end
 
 nPoints = numel(rowIds); % number of cells

@@ -18,7 +18,12 @@ global THSUMACGTRESH
 global DESUMACGTRESH
 
 if nargin == 0
-    variabel_definitions; %rhythmGroups deifnition
+    variable_definitions; %rhythmGroups deifnition
+end
+
+if strcmp(rhythmGroups,'allGrp')
+    load(fullfile(RESULTDIR, 'cell_features','groupTable.mat'),'groupTable');
+    rhythmGroups = groupTable(3:end);
 end
 
 % Load data table

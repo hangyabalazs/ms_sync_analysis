@@ -14,23 +14,23 @@ global RESULTDIR
 % rhGroups columns: [rhGroupID|rhythm_during_delta|rhythm_during_theta]
 % (0: non-rhythmic, 1: delta-rhythmic, 2: theta-rhythmic, 3: not enough data)
 rhGroups = {
-    'CTB',2,2; % constitutive theta bursting
-    'CTT',2,2; % constitutive theta tonic
-    'CD_',1,1; % constitutive delta slow
-    'TD_',2,1; % theta-delta cells (theta under delta, delta under theta)
-    'DT_',1,2; % delta-theta cells
-    'AT_',3,2; % not enough data-theta cells (absent-theta)
-    'AD_',3,1; % not enough data-delta cells (absent-delta)
-    'TA_',2,3; % theta-not enough data (theta-absent)
-    'DA_',1,3; % delta-not enough data cells
-    'AA_',3,3; % not enough data-not enough data cells (absent-absent)
-    'AN_',3,0; % not enough data-nothing cells (absent-nothing)
-    'NA_',0,3; % nothing- not enough data cells (nothing-absent)
-    'NT_',0,2; % nothing-theta
-    'ND_',0,1; % nothing-delta
-    'TN_',2,0; % theta-nothing
-    'DN_',1,0; % delta-nothing
-    'NN_',0,0}; % nothing-nothing
+    'CTB',2,2; % 1. constitutive theta bursting
+    'CTT',2,2; % 2. constitutive theta tonic
+    'CD_',1,1; % 3. constitutive delta slow
+    'TD_',2,1; % 4. theta-delta cells (theta under delta, delta under theta)
+    'DT_',1,2; % 5. delta-theta cells
+    'AT_',3,2; % 6. not enough data-theta cells (absent-theta)
+    'AD_',3,1; % 7. not enough data-delta cells (absent-delta)
+    'TA_',2,3; % 8. theta-not enough data (theta-absent)
+    'DA_',1,3; % 9. delta-not enough data cells
+    'AA_',3,3; % 10. not enough data-not enough data cells (absent-absent)
+    'AN_',3,0; % 11. not enough data-nothing cells (absent-nothing)
+    'NA_',0,3; % 12. nothing- not enough data cells (nothing-absent)
+    'NT_',0,2; % 13. nothing-theta
+    'ND_',0,1; % 14. nothing-delta
+    'TN_',2,0; % 15. theta-nothing
+    'DN_',1,0; % 16. delta-nothing
+    'NN_',0,0}; % 17. nothing-nothing
 
 % Load data table
 load(fullfile(RESULTDIR, 'cell_features','allCell.mat'),'allCell');

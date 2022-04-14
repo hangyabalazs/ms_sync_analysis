@@ -36,12 +36,12 @@ animalId = regexprep(animalIdN,'n',''); % remove n from filename begining
 recordingId = regexprep(recordingIdN,'n',''); % remove n from filename begining
 
 figure('Position',get(0, 'Screensize')); %figure('Position',[-1535,1,1536*2,864])
-ax1 = subplot(3,1,1); wavelet_spectrum(animalIdN,recordingIdN); %ylim([0.5,8])
+ax1 = subplot(3,1,1);  wavelet_spectrum(animalIdN,recordingIdN); %ylim([0.5,8])
 
 ax2 = subplot(3,1,2); hippo_state_detection(animalIdN,recordingIdN);
 
 xLims = xlim; hShift = xLims(2)/20; % horizontal shift of cellID tags
-ax3 = subplot(3,1,3);
+ax3 = subplot(3,1,3); 
 cellIdFnameS = listfiles(fullfile(PREPROCDIR,animalIdN,recordingIdN),'TT');
 for it3 = 1:length(cellIdFnameS) % iterate trough all cells in the recording
     [shankId,cellId] = cbId2shankcellId(cellIdFnameS{it3});
@@ -51,8 +51,8 @@ for it3 = 1:length(cellIdFnameS) % iterate trough all cells in the recording
         lineColor = 'r'; % change raster color if tagged
     end
     plot_raster_lines_fast(TS/NSR,[it3,it3+1],lineColor); hold on
-    text(mod(hShift*it3,xLims(2)),it3+0.5,[num2str(shankId),'-',num2str(cellId)],...
-        'Color',[0,1,0],'FontWeight','bold');
+%     text(mod(hShift*it3,xLims(2)),it3+0.5,[num2str(shankId),'-',num2str(cellId)],...
+%         'Color',[0,1,0],'FontWeight','bold');
 end
 linkaxes([ax1,ax2,ax3],'x')
 subplot(ax1)

@@ -8,7 +8,8 @@ function plot_ccg_network(varargin)
 %   peaks (default: true).
 %   MAXLAG: maximum shift in sampling rate (default: CGWINDOW*NSR).
 %
-%   See also CREATE_CCGMATRIX, CREATE_CCGMATRIXIDS, ALIGN_CCG_PEAKS.
+%   See also CREATE_CCGMATRIX, CREATE_CCGMATRIXIDS, ALIGN_CCG_PEAKS, 
+%   CCG_SCORE_TEST.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -22,10 +23,12 @@ global CGWINDOW
 p = inputParser;
 addOptional(p,'isShift',true,@islogical);
 addOptional(p,'maxlag',CGWINDOW*NSR,@islogical);
+addOptional(p,'plotScores',true,@islogical);
 parse(p,varargin{:});
 
 isShift = p.Results.isShift;
 maxlag = p.Results.maxlag;
+plotScores = p.Results.plotScores;
 
 if nargin == 0
     variable_definitions; %maxlag,(isShift) definitions
@@ -64,6 +67,7 @@ allPoints = [ccgMatrixTh{:},ccgMatrixDe{:}];
 allPoints = sort(allPoints(:));
 CI = [allPoints(round(length(allPoints)/10)), allPoints(end-round(length(allPoints)/10))];
 
+rhGroups = {'pacemaker','tonic','theta-skipping','follower','theta-follower'};
 for it1 = 1:size(ccgMatrixTh,1) % go trough rows of ccg arrays
     for it2 = 1:size(ccgMatrixTh,2) % go trough columns of ccg arrays
         IDpairs = ccgMatrixIds{it1,it2};
@@ -87,27 +91,45 @@ for it1 = 1:size(ccgMatrixTh,1) % go trough rows of ccg arrays
             imageccgs(ccgsDe(:,inxDe).'); hold on
             % Differentiate between recordings:
 %             arrayfun(@(x) line([1,slideWindow*2+1],[x,x],'Color',[1,1,1],'LineWidth',1),changeRec);
-            % Create rescaled, mean ccg:
-            meanCcgsDe = size(ccgsDe,2)-mean(ccgsDe.')*size(ccgsDe,2)/0.0005;
-            plot(meanCcgsDe,'Color',[1,0,0],'LineWidth',2)
+            % Create mean ccg:
+            meanCcgDe = mean(ccgsDe.');
+            plot(size(ccgsDe,2)-meanCcgDe*size(ccgsDe,2)/0.0005,'Color',[1,0,0],'LineWidth',2)
 %             set(gca,'xtick',xticks); set(gca,'xticklabel',xlabels);
             set(gca,'CLim',CI)
             yLims = ylim; set(gca,'ytick',yLims(1)), set(gca,'yticklabel',yLims(2)-0.5), set(gca,'TickDir','out');
             set(gca,'xtick',[0.5,maxlag/2,maxlag+0.5]), set(gca,'xticklabel',{'','',''}), xlabel(''), setmyplot_balazs
+% % % %             % ccg score distribution:
+% % % %             yyaxis right
+% % % %             ccgDeScores = sum((ccgsDe-mean(ccgsDe)).^2);
+% % % %             h = boxplot(ccgDeScores,'positions',1500,'Width',maxlag/2,'Colors','k','symbol','');
+% % % % %             set(h,{'linew'},{2})
+% % % %             ylim([0,2.6]*1e-5)
+% % % % %             title(sum((meanCcgDe - mean(meanCcgDe)).^2))
+            title({[rhGroups{it1}, ' - ', rhGroups{it2}, ' (delta)'];...
+                median(sum((ccgsDe-mean(ccgsDe)).^2))})
             
             %% During theta:
             axes(himage((it1-1)*(nGroups+1)+it2+1))
             [~,inxTh] = sort(range(ccgsTh)); %sorte ccg matrix (amplitude)
-            imageccgs(ccgsDe(:,inxTh).'); hold on
+            imageccgs(ccgsTh(:,inxTh).'); hold on
             % Differentiate between recordings:
 %             arrayfun(@(x) line([1,slideWindow*2+1],[x,x],'Color',[1,1,1],'LineWidth',1),changeRec);
-            % Create rescaled, mean ccg:
-            rescaledCcgsTh = size(ccgsTh,2) - mean(ccgsTh.') * size(ccgsTh,2) / 0.0005;
-            plot(rescaledCcgsTh,'Color',[0,0,1],'LineWidth',2)
+            % Create mean ccg:
+            meanCcgTh = mean(ccgsTh.');
+            plot(size(ccgsTh,2)-meanCcgTh*size(ccgsTh,2)/0.0005,'Color',[0,0,1],'LineWidth',2)
 %             set(gca,'xtick',xticks); set(gca,'xticklabel',xlabels);
             set(gca,'CLim',CI)
             yLims = ylim; set(gca,'ytick',yLims(1)), set(gca,'yticklabel',yLims(2)-0.5), set(gca,'TickDir','out');
             set(gca,'xtick',[0.5,maxlag/2,maxlag+0.5]), set(gca,'xticklabel',{'','',''}), xlabel(''), setmyplot_balazs
+% % % %             % ccg score distribution:
+% % % %             yyaxis right
+% % % %             ccgThScores = sum((ccgsTh-mean(ccgsTh)).^2);
+% % % %             h = boxplot(ccgThScores,'positions',1500,'Width',maxlag/2,'Colors','k','symbol','');
+% % % % %             set(h,{'linew'},{2})
+% % % %             ylim([0,2.6]*1e-5)
+% % % % %             title(sum((meanCcgTh - mean(meanCcgTh)).^2))
+            title({[rhGroups{it1}, ' - ', rhGroups{it2}, ' (theta)'];...
+                median(sum((ccgsTh-mean(ccgsTh)).^2))})
         end
     end
 end

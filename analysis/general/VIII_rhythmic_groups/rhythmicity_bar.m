@@ -1,4 +1,4 @@
-function rhythmicity_bar(rowIds,iT)
+function rhMatrix = rhythmicity_bar(rowIds,iT)
 %RHYTHMICITY_BAR Shows rhythmicity during states with colored bars.
 %   RHYTHMICITY_BAR(ROWIDS,IT) builds a nCell x 2 matrix from colored bars
 %   indicating rhythmic modulations (blue-theta, red-delta, black-non rh.).
@@ -36,7 +36,8 @@ load(fullfile(RESULTDIR,'Fictious_cell_rhythmicity','thresholds','indexTresholds
 % Sort acgs based on theta-index-during-theta:
 sortedCells1 = sortrows(allCell(rowIds,:),mO('ThAcgThInx'));
 
-barMatrix = zeros(size(rowIds,2),2,3);
+rhMatrix = zeros(size(rowIds,1),2);
+barMatrix = zeros(size(rowIds,1),2,3);
 ThAcgThInx = sortedCells1(:,mO('ThAcgThInx'));
 ThAcgDeInx = sortedCells1(:,mO('ThAcgDeInx'));
 DeAcgThInx = sortedCells1(:,mO('DeAcgThInx'));
@@ -44,10 +45,13 @@ DeAcgDeInx = sortedCells1(:,mO('DeAcgDeInx'));
 for it= 1: numel(rowIds)
     % THETA:
     if ThAcgThInx(it)/thetaThInxtrsh > max(ThAcgDeInx(it)/thetaDeInxtrsh,1) % theta rhythmic
+        rhMatrix(it,1) = 1;
         barMatrix(it,1,:) = thColor;
     elseif ThAcgDeInx(it)/thetaDeInxtrsh > max(ThAcgThInx(it)/thetaThInxtrsh,1) % delta rhythmic
+        rhMatrix(it,1) = 2;
         barMatrix(it,1,:) = deColor;
     elseif ThAcgThInx(it) < thetaThInxtrsh & ThAcgDeInx(it) < thetaDeInxtrsh % not-rhythmic
+        rhMatrix(it,1) = 3;
         barMatrix(it,1,:) = nonColor;
     end
     if exist('iT','var') & sortedCells1(it,mO('thsumacr')) < THSUMACGTRESH
@@ -56,10 +60,13 @@ for it= 1: numel(rowIds)
     
     % DELTA:
     if DeAcgThInx(it)/deltaThInxtrsh > max(DeAcgDeInx(it)/deltaDeInxtrsh,1) % theta rhythmic
+        rhMatrix(it,2) = 1;
         barMatrix(it,2,:) = thColor;
     elseif DeAcgDeInx(it)/deltaDeInxtrsh > max(DeAcgThInx(it)/deltaThInxtrsh,1) % delta rhythmic
+        rhMatrix(it,2) = 2;
         barMatrix(it,2,:) = deColor;
     elseif DeAcgThInx(it) < deltaThInxtrsh & DeAcgDeInx(it) < deltaDeInxtrsh % not-rhythmic
+        rhMatrix(it,2) = 3;
         barMatrix(it,2,:) = nonColor;
     end
     if exist('iT','var') & sortedCells1(it,mO('desumacr')) < DESUMACGTRESH

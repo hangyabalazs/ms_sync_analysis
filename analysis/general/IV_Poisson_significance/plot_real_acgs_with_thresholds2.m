@@ -72,7 +72,7 @@ sortedCell1(sortedCell1(:,sumacrcol)<sumacrtresh,:) = []; % filter noisy acgs
 figure;
 subplot(1,3,1);
 a1 = gca;
-imageccgs(sortedCell1,acgInxFirst:acgInxLast); % plot all theta acgs
+imageccgs(sortedCell1(:,acgInxFirst:acgInxLast)); % plot all theta acgs
 w = NSR * CGWINDOW; % window in msec
 xticks = [1,w/3,w/1.5,w/1.2,w,7*w/6,4*w/3,5*w/3,w*2];
 xlabels = {-w,-w*2/3,-w/3,-w/6,0,w/6,w/3,w*2/3,w};
@@ -94,7 +94,7 @@ title('Theta index based');
 
 subplot(1,3,3);
 a2 = gca;
-imageccgs(sortedCell2,acgInxFirst:acgInxLast); % plot all theta acgs
+imageccgs(sortedCell2(:,acgInxFirst:acgInxLast)); % plot all theta acgs
 set(gca,'xtick',xticks); set(gca,'xticklabel',xlabels);
 set(gca,'xlim',[(CGWINDOW-2)*NSR,(CGWINDOW+2)*NSR]) % limit between +/-2 sec
 % title(['sorted, based on ThAcgDeEnergy, thresh: ' num2str(DeEnth)])

@@ -73,14 +73,14 @@ else %avoid ploting
 end
 
 % During theta
-[thetaAcg,thsumacr,alag] = correlation(thetaActPattern,thetaActPattern,thetaColour); %acg
+[thetaAcg,thsumacr,alag] = correlation(thetaActPattern,thetaActPattern,true,thetaColour); %acg
 colour1 = 'k*';
 ThAcgThInx = thetaindex(thetaAcg,alag,isPlot,colour1);
 colour2 = 'y*';
 ThAcgDeInx = deltaindex(thetaAcg,alag,isPlot,colour2);
 
 % During delta
-[deltaAcg, desumacr, alag] = correlation(deltaActPattern,deltaActPattern,deltaColor); %acg
+[deltaAcg, desumacr, alag] = correlation(deltaActPattern,deltaActPattern,true,deltaColor); %acg
 colour3 = 'g*';
 DeAcgThInx = thetaindex(deltaAcg,alag,isPlot,colour3);
 colour4 = 'c*';

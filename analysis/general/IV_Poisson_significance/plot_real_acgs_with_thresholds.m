@@ -66,7 +66,7 @@ maxRatios(ids==2) = -maxRatios(ids == 2);
 [sMaxRatios,sortIds] = sort(maxRatios);
 
 figure;
-imageccgs(allCell,acgInxFirst:acgInxLast,sortIds);
+imageccgs(allCell(sortIds,acgInxFirst:acgInxLast));
 w = NSR*CGWINDOW; % window in msec
 
 % Find last rhythmic row in sorted matrix

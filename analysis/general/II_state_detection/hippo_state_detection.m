@@ -1,9 +1,9 @@
 function hippo_state_detection(animalIdN,recordingIdN,issave)
 %HIPPO_STATE_DETECTION Detects hippocampal states.
 %   HIPPO_STATE_DETECTION(ANIMALIDN,RECORDINGIDN,ISSAVE) loads hippocampal
-%   field potential data and calls THETA_DETECTION with the appropriate 
-%   arguments for detecting dominant states (theta or delta). It saves a 
-%   plot from the detection, logical vectors for the bimodal state (theta 
+%   field potential data and calls THETA_DETECTION with the appropriate
+%   arguments for detecting dominant states (theta or delta). It saves a
+%   plot from the detection, logical vectors for the bimodal state (theta
 %   and delta), phase angles of frequency components.
 %   Parameters:
 %   ANIMALIDN: string (e.g. '20100304').
@@ -33,7 +33,7 @@ end
 
 h = gcf;
 % set(h,'Position',get(0,'Screensize'));
-set(h,'Position',[1,41,1097,505]);
+% set(h,'Position',[1,41,1097,505]);
 
 % Load data:
 fieldPot = loadFieldPot(animalIdN,recordingIdN);
