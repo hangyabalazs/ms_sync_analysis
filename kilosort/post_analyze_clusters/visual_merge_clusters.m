@@ -76,7 +76,7 @@ for it1 = 1:length(colInx)
     % Calculate autocorrelation:
     subplot(54,2,[65:2:107])
     ST1act = sT(clu==goodClus(colInx(it1)))/(SR/NSR);
-    correlation(ST1act,ST1act);
+    correlation(ST1act,ST1act,true);
     
     % Cluster 1:
     subplot(54,2,[2:2:64])
@@ -86,7 +86,7 @@ for it1 = 1:length(colInx)
     % autocorrelation:
     subplot(54,2,[66:2:108])
     ST2act = sT(clu==goodClus(rowInx(it1)))/(SR/NSR);
-    correlation(ST2act,ST2act);
+    correlation(ST2act,ST2act,true);
     c = c + 1;
     if c >20 'out from screen';  end
     if clusterAdv(it1)>0 % jump to next potential cluster-pair group

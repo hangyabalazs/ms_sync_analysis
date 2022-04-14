@@ -14,7 +14,8 @@ function create_avr_waveforms_matrix(animalIdN,recordingIdN,nSpksExt)
 %   NSPKSEXT: optional, number, specifying first how many spikes to
 %   extract (e.g. 100).
 %
-%   See also VISUAL_OVERLAPING_CLUSTERS, VISUAL_MERGE_CLUSTERS.
+%   See also VISUAL_OVERLAPING_CLUSTERS, VISUAL_MERGE_CLUSTERS, 
+%   CREATE_AVR_WAVEFORMS_MATRIX_NOFILTER, CLUSTER_LOCATION_DEPTHS.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA

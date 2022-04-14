@@ -18,7 +18,7 @@ function visual_overlaping_clusters(animalIdN,recordingIdN1,recordingIdN2,issave
 %   ISSAVE: optional, flag, save corresponding clusterIds?
 %
 %   See also CREATE_AVR_WAVEFORMS_MATRIX, SIMILARITY_MATRIX,
-%   TTK_PLOT_WAVEFORM, VISUAL_MERGE_CLUSTERS.
+%   TTK_PLOT_WAVEFORM, VISUAL_MERGE_CLUSTERS, CLUSTER_LOCATION_DEPTHS.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -57,13 +57,15 @@ clu2 = readNPY(fullfile(DATADIR,animalIdN,recordingIdN2,'spike_clusters.npy'));
 %% Load waveforms:
 % Load waveform (nCLusters x nChannels x windowSize) template matrix for
 % recording1:
-load(fullfile(DATADIR,animalIdN,recordingIdN1,[animalId,recordingId1,'_avr_waveforms.mat']));
+% load(fullfile(DATADIR,animalIdN,recordingIdN1,[animalId,recordingId1,'_avr_waveforms.mat']));
+load(fullfile(ROOTDIR,'WAVEFORMS',animalIdN,recordingIdN1,[animalId,recordingId1,'_avr_waveforms.mat']));
 templates1 = allAvgWaveforms; clear allAvgWaveforms;
 [cids1, cgs1] = readClusterGroupsCSV(fullfile(DATADIR,animalIdN,recordingIdN1,'cluster_groups.csv'));
 goodClus1 = cids1(cgs1 == 2);%identified as 'good'
 % Load waveform (nCLusters x nChannels x windowSize) template matrix for
 % recording2:
-load(fullfile(DATADIR,animalIdN,recordingIdN2,[animalId,recordingId2,'_avr_waveforms.mat']));
+% load(fullfile(DATADIR,animalIdN,recordingIdN2,[animalId,recordingId2,'_avr_waveforms.mat']));
+load(fullfile(ROOTDIR,'WAVEFORMS',animalIdN,recordingIdN2,[animalId,recordingId2,'_avr_waveforms.mat']));
 templates2 = allAvgWaveforms; clear allAvgWaveforms;
 [cids2, cgs2] = readClusterGroupsCSV(fullfile(DATADIR,animalIdN,recordingIdN2,'cluster_groups.csv'));
 goodClus2 = cids2(cgs2 == 2); % identified as 'good'
@@ -82,10 +84,11 @@ similarity = similarity_matrix(templates1,nChComp,minComChs,templates2,nChShift)
 sameClus = []; % allocate vector for same clusters
 c = 1;
 % figurePos = [0, 0; 0, 1; 0, 2; 1, 0; 1, 1; 1, 2; 2, 0; 2, 1; 2, 2; 3, 0; 3, 1; 3, 1; 4, 0; 4, 1; 4, 2; 5, 0; 5, 1; 5, 2];
-figurePos = [0, 0; 1, 0; 2, 0; 3, 0; 4, 0; 0, 1; 1, 1; 2, 1; 3, 1; 4, 1; 0, 2; 1, 2; 2, 2; 3, 2; 4, 2; 0, 3; 1, 3; 2, 3; 3, 3; 4, 3];
+figurePos = [0, 0; 1, 0; 2, 0; 3, 0; 4, 0; 5, 0; 0, 1; 1, 1; 2, 1; 3, 1; 4, 1; 5, 1; 0, 2; 1, 2; 2, 2; 3, 2; 4, 2; 5, 2; 0, 3; 1, 3; 2, 3; 3, 3; 4, 3; 5, 3];
 clusterAdv = diff(colInx);
 for it1 = 1:length(colInx) % go trough each potential pairs
-    figure('Position',[50+figurePos(c, 1)*370,50+figurePos(c, 2)*280,360,270])
+    %     figure('Position',[50+figurePos(c, 1)*370,50+figurePos(c, 2)*280,360,270])
+    figure('Position',[50+figurePos(c, 1)*250,50+figurePos(c, 2)*230,290,220])
     % Cluster 2:
     subplot(54,2,[45:2:107])
     TTK_plot_waveform(squeeze(templates2(colInx(it1), :, :)).'); % plot average waveform
@@ -96,7 +99,7 @@ for it1 = 1:length(colInx) % go trough each potential pairs
     % Calculate autocorrelation:
     subplot(54,2,[1:2:43])
     ST2act = sT2(clu2==goodClus2(colInx(it1)))/(SR/NSR);
-    correlation(ST2act,ST2act);
+    correlation(ST2act,ST2act,true);
     title([num2str(goodClus2(colInx(it1))),', score: ',num2str(similarity(rowInx(it1),colInx(it1))*10^9)]);
     
     % Cluster 1:
@@ -104,11 +107,15 @@ for it1 = 1:length(colInx) % go trough each potential pairs
     TTK_plot_waveform(squeeze(templates1(rowInx(it1),:,:)).'); % plot average waveform
     % Adjust colormap:
     set(gca,'clim',[0, maxLim]);
+%     if rowInx(it1)>numel(goodClus1)
+%         continue
+%     end
     title(num2str(goodClus1(rowInx(it1))));
+    
     % Calculate autocorrelation:
     subplot(54, 2, [66:2:108])
     ST1act = sT1(clu1==goodClus1(rowInx(it1)))/(SR/NSR);
-    correlation(ST1act,ST1act);
+    correlation(ST1act,ST1act,true);
     
     c = c + 1;
     if c >20 'out from screen';  end

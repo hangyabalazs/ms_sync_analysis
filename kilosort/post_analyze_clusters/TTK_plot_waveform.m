@@ -26,8 +26,13 @@ spatialWave = zeros(nRows, NSEPTALCHANNELS/nRows*nPoints);
 for it1 = 1:4
     spatialWave(:, (it1-1)*nPoints+1:it1*nPoints) = avrgWave(chMap == it1, :);
 end
-imagesc(spatialWave)
+imagesc(spatialWave), colormap jet
 % Plot borders between recording sites columns
 hold on, line([nPoints, nPoints*2, nPoints*3; nPoints, nPoints*2, nPoints*3],...
-    [0, 0, 0; NSEPTALCHANNELS, NSEPTALCHANNELS, NSEPTALCHANNELS], 'Color', [1, 0, 0]);
+    [0, 0, 0; NSEPTALCHANNELS, NSEPTALCHANNELS, NSEPTALCHANNELS], 'Color', [0.5,0.5,0.5]);
+% Plot borders between recording sites rows
+hold on, line(repmat([0;nPoints*4],1,NSEPTALCHANNELS),...
+    [0.5:NSEPTALCHANNELS; 0.5:NSEPTALCHANNELS], 'Color', [0.5,0.5,0.5]);
+c = colormap(bone); colormap(flipud(c))
+colormap copper
 end

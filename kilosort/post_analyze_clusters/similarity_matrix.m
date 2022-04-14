@@ -44,7 +44,7 @@ for it1 = 1:size(templates1, 1) % go trough all clusters in recording1
     for it2 = 1:size(templates2, 1) % go trough all clusters in recording2
         % compare template1 and template2, for the same channels
         inters = intersect(shiftInx1(1:nChComp),inx2(1:nChComp,it2));
-        if numel(inters) > minComChs % at least MINCOMCHS channels are common from NUMCH top energy channels
+        if numel(inters) > minComChs % > MINCOMCHS channels are common from NUMCH top energy channels
             weight1 = spikeEnergy1(it1, inters+nChShift).';
             % Scaled (with energy on channel) template on top energy channels:
             scTemp1 = abs(squeeze(templates1(it1,inters+nChShift,:))).*repmat(weight1,1,size(templates1,3));
