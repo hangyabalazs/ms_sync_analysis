@@ -9,7 +9,7 @@ function raster_plot(IDs,tWindow)
 %   TWINDOW: 1x2 vector, (e.g. [832,844]).
 %
 %   See also EXAMPLE_CELLS_PLOT, CONVERT_IDS, HIPPO_STATE_DETECTION, 
-%   PLOT_HIPO_AND_CELLS.
+%   PLOT_HIPPO_AND_CELLS.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -47,9 +47,14 @@ hold on
 % legend(gca,'off')
 
 % Length of lines in vertical (y) direction
+% axis 'auto y'
 % yLims = [-3,9];
 yLims = ylim;
 lineYLength = -diff(yLims) / size(IDs,1) / 2;
+% yLims = [-3,8]; lineYLength = -0.5;
+if size(IDs,1) == 1 % if there is only 1 cell
+    lineYLength = -diff(yLims) / size(IDs,1) / 6;
+end
 
 for it = 1:size(IDs,1)
     shankId = IDs{it,3};

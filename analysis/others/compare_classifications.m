@@ -1,4 +1,4 @@
-function compare_classifications(rootDir,resPath1,resPath2)
+function compare_classifications(rootDir,resPath1,resPath2,rhGroupId)
 %COMPARE_CLASSIFICATIONS Compares two runs outputs.
 %   COMPARE_CLASSIFICATIONS(ROOTDIR,RESPATH1,RESPATH2) 
 %   Specify a rhythmicity group name (e.g.: CTB), and this function plots
@@ -7,6 +7,7 @@ function compare_classifications(rootDir,resPath1,resPath2)
 %   ROOTDIR: string, common path of analysis folders' parent.
 %   RESPATH1: string, analysis1 path.
 %   RESPATH2: string, analysis1 path.
+%   RHGROUPID = string, rhythmicity group ID (e.g.: 'CTB').
 %
 %   See also .
 
@@ -15,10 +16,10 @@ function compare_classifications(rootDir,resPath1,resPath2)
 %   Date: //
 
 if nargin == 0
-    variable_definitions; %rootDir, resPath1, resPath2
+    variable_definitions; %rootDir, resPath1, resPath2, rhGroupId
 end
 
-% Theta detection:
+%% Theta detection:
 files1 = return_used_files(dir(fullfile(rootDir,resPath1,'theta_detection','pngs')),{'.','n'},true);
 files2 = return_used_files(dir(fullfile(rootDir,resPath2,'theta_detection','pngs')),{'.','n'},true);
 fileIds = unique([{files1.name},{files2.name}]);
@@ -36,55 +37,27 @@ for it = 1:length(fileIds)
     waitforbuttonpress
     close all
 end
-    
-allCell1 = load(fullfile(rootDir,resPath1,'cell_features','allCell.mat'));
-allCell1 = allCell1.allCell;
-mO1 = load(fullfile(rootDir,resPath1,'cell_features','allCellMap.mat'));
-mO1 = mO1.mO;
-load(fullfile(rootDir,resPath1,'rhythmic_groups','rhGroups.mat'),'rhGroups');
-IDs1 = allCell1(allCell1(:,mO1('rhGroup'))==13,1:4);
 
-allCell2 = load(fullfile(resPath2,'cell_features','allCell.mat'));
-allCell2 = allCell2.allCell;
-mO2 = load(fullfile(resPath2,'cell_features','allCellMap.mat'));
-mO2 = mO2.mO;
-load(fullfile(resPath2,'rhythmic_groups','rhGroups.mat'),'rhGroups');
-IDs2 = allCell2(allCell2(:,mO2('rhGroup'))==13,1:4);
+%% Rhythmicity group
+% analysis1:
+load(fullfile(rootDir,resPath1,'parameters.mat'));
+load(fullfile(rootDir,resPath1,'cell_features','allCell.mat'));
+rowInd1 = get_rhGroup_indices_in_allCell(rhGroupId);
+Ids1 = allCell(rowInd1,1:4);
+% analysis2:
+load(fullfile(rootDir,resPath2,'parameters.mat'));
+load(fullfile(rootDir,resPath2,'cell_features','allCell.mat'));
+Ids2 = allCell(get_rhGroup_indices_in_allCell(rhGroupId),1:4);
+rowInd2 = get_rhGroup_indices_in_allCell(rhGroupId);
+Ids2 = allCell(rowInd2,1:4);
 
-dffIds1 = setdiff(IDs1,IDs2,'rows');
-dffIds2 = setdiff(IDs2,IDs1,'rows');
+% Additional cells in the first analysis in that rhythmicity group:
+[diffs1,Ind1] = setdiff(Ids1,Ids2,'rows');
+load(fullfile(rootDir,resPath1,'parameters.mat'));
+cell_groups(rowInd1(Ind1));
 
-for it = 1: size(dffIds, 1)
-    animalId = num2str(dffIds(it,1));
-    recordingId = num2str(dffIds(it,2));
-    shankId = num2str(dffIds(it,3));
-    cellId = num2str(dffIds(it,4));
-    rowId1 = find(allCell1(:, mO1('animalId')) == str2num(animalId) & ...
-        allCell1(:, mO1('recordingId')) == str2num(recordingId) & ...
-        allCell1(:, mO1('shankId')) == str2num(shankId) & ...
-        allCell1(:, mO1('cellId')) == str2num(cellId));
-    rowId2 = find(allCell2(:, mO1('animalId')) == str2num(animalId) & ...
-        allCell2(:, mO2('recordingId')) == str2num(recordingId) & ...
-        allCell2(:, mO2('shankId')) == str2num(shankId) & ...
-        allCell2(:, mO2('cellId')) == str2num(cellId));
-    %Autocorrelation
-    openfig(fullfile(resPath1,'MS_cell_rhythmicity','figures',[animalId,...
-        '_',recordingId,'_',shankId,'_',cellId,'.fig']));
-    text(0,0.0001,{allCell1(rowId1,mO1('ThAcgThInx'))/thetaThInxtrsh1,...
-        allCell1(rowId1,mO1('ThAcgDeInx'))/thetaDeInxtrsh1,...
-        allCell1(rowId1,mO1('DeAcgThInx'))/deltaThInxtrsh1,...
-        allCell1(rowId1,mO1('DeAcgDeInx'))/deltaDeInxtrsh1});
-    
-    openfig(fullfile(resPath2,'MS_cell_rhythmicity','figures',[animalId,...
-        '_',recordingId,'_',shankId,'_',cellId,'.fig']));
-    text(0,0.0001,{allCell2(rowId2,mO2('ThAcgThInx'))/thetaThInxtrsh2,...
-        allCell2(rowId2,mO2('ThAcgDeInx'))/thetaDeInxtrsh2,...
-        allCell2(rowId2,mO2('DeAcgThInx'))/deltaThInxtrsh2,...
-        allCell2(rowId2,mO2('DeAcgDeInx'))/deltaDeInxtrsh2});
-    
-    [~,b] = ismember(dffIds(it,:), allCell1(:,1:4),'rows');
-    rhGroups(allCell1(b,mO1('rhGroup')),1)
-    close all
-end
-
+% Additional cells in the second analysis in that rhythmicity group:
+[diffs2,Ind2] = setdiff(Ids2,Ids1,'rows');
+load(fullfile(rootDir,resPath2,'parameters.mat'));
+cell_groups(rowInd2(Ind2));
 end
