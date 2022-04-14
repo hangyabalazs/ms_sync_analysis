@@ -1,30 +1,11 @@
 function MSsync_figure3()
 % Requires almost all steps from MAIN_ANALYSIS (I-VIII. steps)!
-%% figure 3:
+%% Figure 3 (follower, arat):
 ANA_RAT_GLOBALTABLE
- example_cells_plot({20100616,9,2,2;20100616,9,2,4;20100616,9,3,8},[832,844]);
+example_cells_plot({20100728,4,4,10;20100728,4,4,11;20100728,4,4,13},[1231,1243],[0,0.0006],[0,0.2]);
 savefig(gcf,'panelABF.fig'), close all
-rowIds = get_rhGroup_indices_in_allCell('CD_');
+rowIds = get_rhGroup_indices_in_allCell('DT_');
 cell_groups(rowIds)
-savefig(figure(1),'panelC_1.fig')
-savefig(figure(2),'panelC_2.fig')
-savefig(figure(3),'panelD.fig')
-savefig(figure(4),'panelE.fig')
-savefig(figure(5),'panelG_1.fig')
-savefig(figure(6),'panelG_2.fig')
-close all
-
-%% figure 3 supplement1 (amouse):
-ANA_MOUSE_GLOBALTABLE
-example_cells_plot({201801082,1,1,21;201801082,1,1,79;201801082,1,1,85},[311,323]);
-savefig(gcf,'supp1_panelABF.fig'), close all
-rowIds = get_rhGroup_indices_in_allCell('CD_');
-cell_groups(rowIds)
-savefig(figure(1),'supp1_panelC_1.fig')
-savefig(figure(2),'supp1_panelC_2.fig')
-savefig(figure(3),'supp1_panelD.fig')
-savefig(figure(4),'supp1_panelE.fig')
-savefig(figure(5),'supp1_panelG_1.fig')
-savefig(figure(6),'supp1_panelG_2.fig')
+savefig(gcf,'panelCDEG.fig')
 close all
 end

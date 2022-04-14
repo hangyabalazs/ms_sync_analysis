@@ -1,41 +1,34 @@
 function MSsync_figure6
-% Requires almost all steps from MAIN_ANALYSIS (I-IX., XI. steps)!
-% This code relies on (included in MAIN_ANALYSIS):
-% - figure6: you need to run first GROUP_SYNCHRONIZATION for the calculation of
-% synchronization measures!!
-% - figure6 supp1: you need to run first CREATE_CCGMATRIX for the calculation of
-% cross correlations between rhythmicity groups!!
-
-%% figure6
-resPaths = {'D:\ANA_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
-     'D:\FREE_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
-     'D:\ANA_RAT\analysis\final_analysis\PACEMAKER_SYNCH'};
-plot_synchronization_theories(resPaths);
-%   panelA: firing rate
-savefig(figure(1),'panelA_1.fig')
-savefig(figure(2),'panelA_2.fig')
-savefig(figure(7),'panelA_3.fig')
-%   panelB: rhythmicity frequency difference
-savefig(figure(11),'panelB_1.fig')
-savefig(figure(12),'panelB_2.fig')
-savefig(figure(13),'panelB_3.fig')
-%   panelC: ISI
-savefig(figure(16),'panelC_1.fig')
-savefig(figure(17),'panelC_2.fig')
-savefig(figure(18),'panelC_3.fig')
-%   panelD: theta cycle skipping
-savefig(figure(21),'panelD_1.fig')
-savefig(figure(22),'panelD_2.fig')
-savefig(figure(23),'panelD_3.fig')
-%   panelE: frequency synchronization
-savefig(figure(26),'panelE_1.fig')
-savefig(figure(27),'panelE_2.fig')
-savefig(figure(28),'panelE_3.fig')
+% Requires almost all steps from MAIN_ANALYSIS (I-X. steps)!
+%% Figure 6 (opto groups):
+OPTO_GLOBALTABLE
+%   panel A-H: PV
+example_cells_plot({20180821,1,4,23},[296,308],[0,0.00044],[0,0.15]);
+savefig(gcf,'panelABCG.fig'), close all
+rowIds = get_optoGroup_indices_in_allCell('PVR');
+cell_groups(rowIds)
+savefig(gcf,'panelDEFH.fig')
 close all
+rhythmicity_bar(rowIds,true);
+savefig(gcf,'panelD_0.fig'), close
 
-%% figure6 supp 1 (arat):
-ANA_RAT_GLOBALTABLE
-plot_ccg_network();
-savefig(gcf,'supp1.fig')
+%   panel I-P: VGAT
+example_cells_plot({20190512,5,3,34},[298,310],[0,0.00044],[0,0.15]);
+savefig(gcf,'panelIJKO.fig'), close all
+rowIds = get_optoGroup_indices_in_allCell('VGA');
+cell_groups(rowIds)
+savefig(gcf,'panelLMNP.fig')
 close all
+rhythmicity_bar(rowIds,true);
+savefig(gcf,'panelL_0.fig'), close
+
+%   panel Q-X: VGLUT
+example_cells_plot({20190510,6,4,65},[270,282],[0,0.00044],[0,0.15]);
+savefig(gcf,'panelQRSW.fig'), close all
+rowIds = get_optoGroup_indices_in_allCell('VGL');
+cell_groups(rowIds)
+savefig(gcf,'panelTUVX.fig')
+close all
+rhythmicity_bar(rowIds,true);
+savefig(gcf,'panelT_0.fig'), close
 end

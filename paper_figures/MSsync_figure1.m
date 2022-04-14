@@ -47,30 +47,16 @@ close all
 
 %% panel G: wavelet of a delta theta transition (arat)
 ANA_RAT_GLOBALTABLE
-wavelet_spectrum('20100728','5',[1000,1250],true);
+wavelet_spectrum('20100728','5',[1000,1250],false,true);
 savefig(gcf,'panelG.fig')
 close all
 
 %% panel H: zoomed non-theta - theta transition: radiatum raw, wavelet, MS activity (arat)
-wavelet_spectrum('20100728','5',[1132,1144],true);
+wavelet_spectrum('20100728','5',[1132,1144],false,true);
 savefig(gcf,'panelH_1.fig'), close all
 
 rowIds = find_rowIds('20100728','5',[4,4,4,4,4,4,4,4,4,1,1,1,1,4,4],[11,13,8,3,5,12,9,10,2,12,8,4,13,4,6]);
 raster_plot(rowIds,[1132,1144])
 savefig(gcf,'panelH_2.fig')
-close all
-
-%% FIGURE1 supp1 (arat, fmouse histology)
-%   -arat hippo: ChAT, fluorescent, atlas (Viktor7_1247_PV_2c_1)
-%   -arat MS: ChAT, fluorescent, atlas (Viktor9_1268_Chat_4c_2)
-%   -fmouse hippo: Dil, fluorescent, atlas (1750_3_ms1_2,5x_MODIF)
-%   -fmouse MS: Dil, fluorescent, atlas (hc_right_top_2.5x)
-
-%% FIGURE1 supp2 pyramidal layer phase change (amouse)
-%   panelA: histolology Nissl, fluor, atlas (201801102_3HPC_13_J)
-ANA_MOUSE_GLOBALTABLE
-pyramidal_phase_change('201801102','12',[1204,1206]);
-savefig(figure(1),'supp2_panelC.fig')
-savefig(figure(2),'supp2_panelB.fig')
 close all
 end

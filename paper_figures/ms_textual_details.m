@@ -37,19 +37,30 @@ funcCallDef = ['load(fullfile(RESULTDIR,''network\ccgMatrixIds.mat''));',...
 save('funcCallDef.mat','funcCallDef')
 execute_datasets();
 
-% Glutamatergic-theta rhythmic neurons 
+
 OPTO_GLOBALTABLE
+% PV+ cells
+PVRs = get_optoGroup_indices_in_allCell('PVR');
+PVRCTBs = intersect(PVRs,get_rhGroup_indices_in_allCell_opto('CTB'));
+[numel(PVRCTBs),numel(PVRs)] % #(PV+ pacemakers) /  # PV+
+% VGAT cells
+VGAs = get_optoGroup_indices_in_allCell('VGA');
+VGACTBs = intersect(VGAs,get_rhGroup_indices_in_allCell_opto('CTB'));
+[numel(VGACTBs),numel(VGAs)] % #(VGAT pacemakers) /  # VGAT
+% PV+ pacemakers frequency synchronization (stats): FREQUENCY_SYNCHRONIZATION_OPTO.m
+
+% Glutamatergic-theta rhythmic neurons 
 VGLs = get_optoGroup_indices_in_allCell('VGL');
 [thFr,deFr] = firing_rates(VGLs);
 [median(thFr./deFr),se_of_median(thFr./deFr);]
-load(fullfile(RESULTDIR,'cell_features\allCell.mat'));
-load(fullfile(RESULTDIR,'cell_features\allCellMap.mat'));
-load(fullfile(RESULTDIR,'Fictious_cell_rhythmicity\thresholds\indexTresholds'));
-sum(allCell(VGLs,mO('ThAcgThInx'))/thetaThInxtrsh > max(allCell(VGLs,mO('ThAcgDeInx'))/thetaDeInxtrsh,1) & ...
-allCell(VGLs,mO('DeAcgThInx'))/deltaThInxtrsh > max(allCell(VGLs,mO('DeAcgDeInx'))/deltaDeInxtrsh,1))
-% Or:
-CTBs = get_rhGroup_indices_in_allCell('CTB');
-sum(ismember(VGLs,CTBs))
+numel(intersect(VGLs,get_rhGroup_indices_in_allCell_opto('CTB'))) % # pacemakers
+numel(intersect(VGLs,get_rhGroup_indices_in_allCell_opto('CTT'))) % # tonic cells
+% Theta -delta power ration increase (stats): TAGGED_RECORDING_WAVELET.m
+% % Or:
+% CTBs = get_rhGroup_indices_in_allCell('CTB');
+% CTTs = get_rhGroup_indices_in_allCell('CTT');
+% sum(ismember(VGLs,CTBs))
+% sum(ismember(VGLs,CTTs))
 
 %% Methods
 % opto tagged neurons :
@@ -109,10 +120,15 @@ MODEL_GLOBALTABLE
 MODEL_GLOBALTABLE
 BURSTWINDOW
 
+%% Statistical testing:
+% % load in allCell matrix before calling:
+% fit_VM_mixture(allCell(get_rhGroup_indices_in_allCell('CTB'),mO('thetaMA')),3)
+
 %% Firing rate boxplot statistics
 funcCallDef = 'execute_rhGroups(''[thFr,deFr] = firing_rates(rowIds); try signrank(thFr,deFr), catch [], end;'',[])';
 save('funcCallDef.mat','funcCallDef')
 execute_datasets();
+% or use: FIRING_RATE_STATISTICS()
 
 delete('funcCallDef.mat')
 end

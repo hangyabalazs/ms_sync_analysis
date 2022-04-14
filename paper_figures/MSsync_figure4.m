@@ -1,87 +1,68 @@
 function MSsync_figure4()
-% Requires almost all steps from MAIN_ANALYSIS (I-VIII. steps)!
-%% figure 4:
-ANA_RAT_GLOBALTABLE
-example_cells_plot({20100304,2,1,4;20100304,2,1,3;20100304,2,2,3},[679,691]);
-savefig(gcf,'panelABF.fig'), close all
-rowIds = get_rhGroup_indices_in_allCell('CTT');
-cell_groups(rowIds)
-savefig(figure(1),'panelC_1.fig')
-savefig(figure(2),'panelC_2.fig')
-savefig(figure(3),'panelD.fig')
-savefig(figure(4),'panelE.fig')
-savefig(figure(5),'panelG_1.fig')
-savefig(figure(6),'panelG_2.fig')
+% Requires almost all steps from MAIN_ANALYSIS (I-IX., XI. steps)!
+% This code relies on (included in MAIN_ANALYSIS):
+% - Figure 4: you need to run first GROUP_SYNCHRONIZATION for the calculation of
+% synchronization measures!!
+% - Figure S17: you need to run first CREATE_CCGMATRIX for the calculation of
+% cross correlations between rhythmicity groups!!
+% - Figure S22
+
+%% Figure 4 (pacemaker synchronization):
+resPaths = {'D:\ANA_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
+     'D:\FREE_MOUSE\analysis\final_analysis\PACEMAKER_SYNCH';...
+     'D:\ANA_RAT\analysis\final_analysis\PACEMAKER_SYNCH'};
+plot_synchronization_theories(resPaths);
+% panel A: firing rate
+savefig(figure(1),'panelA_1.fig')
+savefig(figure(2),'panelA_2.fig')
+savefig(figure(7),'panelA_3.fig')
+
+% panel B: rhythmicity frequency difference
+savefig(figure(11),'panelB_1.fig')
+savefig(figure(12),'panelB_2.fig')
+savefig(figure(13),'panelB_3.fig')
+
+% panel C: ISI
+savefig(figure(16),'panelC_1.fig')
+savefig(figure(17),'panelC_2.fig')
+savefig(figure(18),'panelC_3.fig')
+
+% panel D: theta cycle skipping
+savefig(figure(21),'panelD_1.fig')
+savefig(figure(22),'panelD_2.fig')
+savefig(figure(23),'panelD_3.fig')
+
+% panel E: frequency synchronization
+savefig(figure(26),'panelE_1.fig')
+savefig(figure(27),'panelE_2.fig')
+savefig(figure(28),'panelE_3.fig')
+
+% panel F: rhythmicity frequency deviations (Added after review1)
+savefig(figure(31),'panelF_1.fig') 
+savefig(figure(32),'panelF_2.fig')
+savefig(figure(33),'panelF_3.fig')
 close all
 
-%% figure 4 supplement1 pacemaker vs. tonic separation:
-%   panelA: arat
-ANA_RAT_GLOBALTABLE
-CTB_vs_CTT
-savefig(figure(1),'supp1_panelA_1.fig')
-savefig(figure(2),'supp1_panelA_2.fig')
-savefig(figure(3),'supp1_panelA_3.fig')
-close all
-%   panelB: example cells (arat)
-%example1
-cell_rhythmicity('20100728','5',4,13);
-xlim([-1000,1000])
-savefig(gcf,'supp1_panelB_1_1.fig'), close
-ISI(find_rowIds('20100728','5',4,13));
-savefig(gcf,'supp1_panelB_1_2.fig'), close
-%example2
-cell_rhythmicity('20100304','1',1,5);
-xlim([-1000,1000])
-savefig(gcf,'supp1_panelB_2_1.fig'), close
-ISI(find_rowIds('20100304','1',1,5));
-savefig(gcf,'supp1_panelB_2_2.fig'), close
-%example3
-cell_rhythmicity('20100805','4',4,8);
-xlim([-1000,1000])
-savefig(gcf,'supp1_panelB_3_1.fig'), close
-ISI(find_rowIds('20100805','4',4,8));
-savefig(gcf,'supp1_panelB_3_2.fig'), close
-plot_hippo_and_cells('20100805','4',[4],[8],32,[570.3,570.45])
-savefig(gcf,'supp1_panelB_3_3.fig'), close
+% panel G: example wavelet coherence of 4-11 and 4-13 cells from 20100728_5
+% recording (mean of all transitions):
+cells_wavelet_coherence('20100728','5',[4,4],[11,13],5,7,[]);
+set(gca,'clim',[0.3,0.7])
+set(gca,'ytick',[1,13,22,34,53])
+set(gca,'yticklabel',{20,10,6,3,1})
+savefig(gcf,'panelG_1.fig')
 
-ANA_MOUSE_GLOBALTABLE
-CTB_vs_CTT
-savefig(figure(1),'supp1_panelC_1.fig')
-savefig(figure(2),'supp1_panelC_2.fig')
-savefig(figure(3),'supp1_panelC_3.fig')
-close all
-FREE_MOUSE_GLOBALTABLE
-CTB_vs_CTT
-savefig(figure(1),'supp1_panelD_1.fig')
-savefig(figure(2),'supp1_panelD_2.fig')
-savefig(figure(3),'supp1_panelD_3.fig')
-close all
-
-%% figure 4 supplement2 (amouse):
-ANA_MOUSE_GLOBALTABLE
-example_cells_plot({20170608,45,1,7;20170608,45,1,58;20170608,45,1,74},[306,318]);
-savefig(gcf,'supp2_panelABF.fig'), close all
-rowIds = get_rhGroup_indices_in_allCell('CTT');
-cell_groups(rowIds)
-savefig(figure(1),'supp2_panelC_1.fig')
-savefig(figure(2),'supp2_panelC_2.fig')
-savefig(figure(3),'supp2_panelD.fig')
-savefig(figure(4),'supp2_panelE.fig')
-savefig(figure(5),'supp2_panelG_1.fig')
-savefig(figure(6),'supp2_panelG_2.fig')
-close all
-
-%% figure 4 supplement3 (fmouse):
-FREE_MOUSE_GLOBALTABLE
-example_cells_plot({20161989,139140,3,19;20161989,139140,3,59;20161989,139140,3,66},[1247.9,1259.9]);
-savefig(gcf,'supp3_panelABF.fig'), close all
-rowIds = get_rhGroup_indices_in_allCell('CTT');
-cell_groups(rowIds)
-savefig(figure(1),'supp3_panelC_1.fig')
-savefig(figure(2),'supp3_panelC_2.fig')
-savefig(figure(3),'supp3_panelD.fig')
-savefig(figure(4),'supp3_panelE.fig')
-savefig(figure(5),'supp3_panelG_1.fig')
-savefig(figure(6),'supp3_panelG_2.fig')
+% panel H: average wavelet coherence of all corecorded pacemaker pairs 
+% (mean of all transitions):
+funcCallDef = ['[wcoh,f] = cells_wavelet_coherence(animalId,recordingId,shankIds,cellIds,5,7);',...
+    'output = f;'...
+    'output2{cntr} = wcoh;'];
+[f,~,output2] = execute_corecorded_pairs(get_rhGroup_indices_in_allCell('CTB'),funcCallDef);
+frInd = find(f<21 & f>0.5); % interesting frequencies
+avgWcoh = squeeze(mean(cat(3,output2{:}),3,'omitnan'));
+figure, imagesc(1:size(avgWcoh,2),1:numel(frInd),avgWcoh(frInd,:));
+set(gca,'clim',[0.3,0.5])
+set(gca,'ytick',[1,13,22,34,53])
+set(gca,'yticklabel',{20,10,6,3,1})
+savefig(gcf,'panelH_1.fig')
 close all
 end
