@@ -22,15 +22,9 @@ if nargin == 0
 end
 
 % Load state vectors:
-load(fullfile(RESULTDIR,'theta_detection','theta_segments',[animalId,recordingId]),'theta','delta');
-load(fullfile(DATADIR,animalId,'basic_network_parameters.mat'),'segmLength');
-thetaStim = [segmLength(1)+1,segmLength(1)+segmLength(2)]; % theta stimulation
-deltaStim2 = [segmLength(1)+segmLength(2)+1,sum(segmLength)]; % delta stimulation
-
-% Time ratio spent in the given state:
-thRatio = sum(theta(thetaStim(1):thetaStim(2)))/diff(thetaStim);
-deRatio = sum(delta(deltaStim2(1):deltaStim2(2)))/diff(deltaStim2);
-
-% Mean of the two ratios:
+actState = load(fullfile(RESULTDIR,'theta_detection','theta_segments',[animalId,recordingId]),'theta','delta');
+expState = load(fullfile(RESULTDIR,'expected_segments',[animalId,recordingId]),'theta','delta');
+thRatio = sum(actState.theta(find(expState.theta))) / sum(expState.theta);
+deRatio = sum(actState.delta(find(expState.delta))) / sum(expState.delta);
 synchScore = mean([thRatio,deRatio]);
 end

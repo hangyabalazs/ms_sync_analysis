@@ -1,7 +1,7 @@
-function create_network_parameters(resPath,nCells,segmLength,connRate,stimAmpMu,stimVar,synDelayMu,synWeightMu,thrshMu,synVar,tonicIncrease,deltaMod)
+function create_network_parameters(resPath,nCells,segmLength,connRate,stimAmpMu,tonicIncrease,stimVar,synDecayMu,synDelayMu,synWeightMu,thrshMu,synVar,deltaMod,maxLatency)
 %CREATE_NETWORK_PARAMETERS Creates all parameters of a model network.
 %   CREATE_NETWORK_PARAMETERS(RESPATH,NCELLS,SEGMLENGTH,CONNRATE,STIMAMPMU,
-%   STIMVAR,SYNDELAYMU,SYNWEIGHTMU,THRSHMU,SYNVAR,TONICINCREASE,DELTAMOD)
+%   TONICINCREASE,STIMVAR,SYNDECAYMU,SYNDELAYMU,SYNWEIGHTMU,THRSHMU,SYNVAR,DELTAMOD)
 %   creates network parameters (synapsis, stimulations) by sampling normal 
 %   distributions specified by their means and variance (inputs).
 %   Parameters (defaults are specified below):
@@ -13,13 +13,14 @@ function create_network_parameters(resPath,nCells,segmLength,connRate,stimAmpMu,
 %   STIMAMPMU: mean stimulation amplitude (nA) (Neuron built-in IClamp object).
 %   TONICINCREASE: stimulation strength increase at non-theta - theta.
 %   STIMVAR: variance stimulation amplitude.
-%   SYNDELAYMU: mean synaptic delay (ms) (Neuron built-in Expsyn object) 
-%   (or decays, depending on which row is commented in 
-%   pacemaker_network_simulation.hoc file).
+%   SYNDECAYMU: mean synaptic decay (ms) (Neuron built-in Expsyn object).
+%   SYNDELAYMU: mean synaptic delay (ms) (Neuron built-in Netcon object).
 %   SYNWEIGHTMU: mean synaptic weight (Neuron built-in NetCon object).
 %   THRESHMU: mean synaptic threshold (Neuron built-in Expsyn object).
 %   SYNVAR: synaptic variance in delay and weight.
 %   DELTAMOD: delta modulation amplitude (compared to tonic excitation).
+%   MAXLATENCY: maximum delay between cell stimulations (to avoid phase
+%   reset sync).
 % 
 %   See also GENERATE_AND_SIMULATE_MODEL, CREATE_TXT_PARAMFILE, 
 %   CONVERT_MODEL_OUTPUT.
@@ -33,7 +34,7 @@ if nargin == 0
     model_resPath_def; % mcore parameter definitions
     model_parameter_definitions;
     save(fullfile(resPath,'actual_run','basic_network_parameters.mat'),'nCells','segmLength','connRate',...
-    'stimAmpMu','tonicIncrease','stimVar','synDelayMu','synWeightMu','thrshMu','synVar','deltaMod');
+    'stimAmpMu','tonicIncrease','stimVar','synDecayMu','synDelayMu','synWeightMu','thrshMu','synVar','deltaMod');
 end
 
 % Parameter definitions:
@@ -59,14 +60,28 @@ if length(segmLength) == 1 % same for all simulated segments
     segmLength = repmat(segmLength,1,3);
 end
 
-% stimulation lengths (during theta and delta1,2):
-stimLengths = repmat(segmLength, nCells, 1);
-stimMatrix(:, 3) = stimLengths(:);
-% stimulation delays (first delta1, than theta, and delta2):
-stimMatrix(1:nCells, 4) = repmat(0, nCells, 1); % elta
-stimMatrix(nCells+1:nCells*2, 4) = repmat(segmLength(1), nCells, 1); % theta
-stimMatrix(nCells*2+1:nCells*3, 4) = repmat(segmLength(1)+segmLength(2), nCells, 1); % delta
 
+
+%% OPTION 1 (before 17/06/2021)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% % stimulation lengths (during theta and delta1,2):
+% stimLengths = repmat(segmLength, nCells, 1);
+% stimMatrix(:, 3) = stimLengths(:);
+% % stimulation delays (first delta1, than theta, and delta2):
+% stimMatrix(1:nCells, 4) = repmat(0, nCells, 1); % delta
+% stimMatrix(nCells+1:nCells*2, 4) = repmat(segmLength(1), nCells, 1); % theta
+% stimMatrix(nCells*2+1:nCells*3, 4) = repmat(segmLength(1)+segmLength(2), nCells, 1); % delta
+
+%% OPTION 2 (after 17/06/2021, avoid phase reset)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% stimulation delays (first delta1, than theta, and delta2):
+stimMatrix(1:nCells, 4) = randi([0,maxLatency],nCells,1); % delta
+stimMatrix(nCells+1:nCells*2, 4) = segmLength(1) + randi([0,maxLatency],nCells,1); % theta
+stimMatrix(nCells*2+1:nCells*3, 4) = segmLength(1)+segmLength(2) + randi([0,maxLatency],nCells,1); % delta
+% stimulation lengths (during theta and delta1,2):
+stimMatrix(1:nCells, 3) = stimMatrix(nCells+1:nCells*2, 4) - stimMatrix(1:nCells, 4);
+stimMatrix(nCells+1:nCells*2, 3) = stimMatrix(nCells*2+1:nCells*3, 4) - stimMatrix(nCells+1:nCells*2, 4);
+stimMatrix(nCells*2+1:nCells*3, 3) = sum(segmLength) - stimMatrix(nCells*2+1:nCells*3, 4);
+
+%%
 % DELTA MODULATION:
 deltaMod = mean(stimMatrix(:,2))*deltaMod; % calculate actual amplitude
 % allocation (each row is a stimulating electrode on one cell),
@@ -92,26 +107,40 @@ deltaStimMatrix(nCells+1:nCells*2, 5) = repmat(segmLength(1)+segmLength(2), nCel
 % synaptic thresholds (st, correctly reversal potential) for Neuron built-in Expsyn object (mV):
 thrshMatrix = ones(nCells)*thrshMu;
 thrshMatrix = thrshMatrix - diag(diag(thrshMatrix)); % clear "self-connections"
-% synaptical delay (or decay, see Help) variance:
-syDelaySigma = synDelayMu*synVar;
-delayMatrix = sample_normal_dist(synDelayMu, syDelaySigma, nCells, nCells);
+% synaptical decay:
+synDecaySigma = synDecayMu*synVar; % decay variance
+decayMatrix = sample_normal_dist(synDecayMu,synDecaySigma,nCells,nCells);
+decayMatrix = decayMatrix - diag(diag(decayMatrix)); % clear "self-connections"
+% synaptical delay:
+synDelaySigma = synDelayMu*synVar; % delay variance
+delayMatrix = sample_normal_dist(synDelayMu,synDelaySigma,nCells,nCells);
 delayMatrix = delayMatrix - diag(diag(delayMatrix)); % clear "self-connections"
-% synaptical weight varriance:
-synWeightSigma = abs(synWeightMu*synVar);
+% synaptical weight:
+synWeightSigma = abs(synWeightMu*synVar); % weight varriance
 weightMatrix = sample_normal_dist(synWeightMu, synWeightSigma, nCells, nCells);
 weightMatrix = weightMatrix - diag(diag(weightMatrix)); % clear "self-connections"
 
-% Discard specific synapses (edges) from total graph (specified by CONNRATE):
-notChosenSyns = randperm(nCells*nCells,round(nCells*nCells*(1-connRate)));
+%% Discard specific synapses (edges) from total graph (specified by CONNRATE):
+%% OPTION 1 (former, not precise as diagonal elements are also counted):
+% notChosenSyns = randperm(nCells*nCells,round(nCells*nCells*(1-connRate)));
+%% OPTION 2 (former, precise as diagonal elements (self connections) are not counted):
+offDiags = 1:nCells^2; % every matrix elements
+offDiags(1:(nCells+1):nCells*nCells) = []; % discard diagonal elements
+notChosenSyns = randsample(offDiags,round(numel(offDiags)*(1-connRate)));
+
 thrshMatrix(notChosenSyns) = 0;
+decayMatrix(notChosenSyns) = 0;
 delayMatrix(notChosenSyns) = 0;
 weightMatrix(notChosenSyns) = 0;
+
+% Delete existing files:
+delete(fullfile(resPath,'actual_run\*'));
 
 % Write parameters to excel file:
 xlswrite(fullfile(resPath,'actual_run','header.xlsx'), [nCells,segmLength]);
 xlswrite(fullfile(resPath,'actual_run','stimulation.xlsx'), stimMatrix);
 xlswrite(fullfile(resPath,'actual_run','deltaStimulation.xlsx'), deltaStimMatrix);
-xlswrite(fullfile(resPath,'actual_run','synapses.xlsx'), [thrshMatrix; delayMatrix; weightMatrix]);
+xlswrite(fullfile(resPath,'actual_run','synapses.xlsx'), [thrshMatrix; decayMatrix; delayMatrix; weightMatrix]);
 
 % Convert .xlsx parameter files to txt, readable by Neuron
 create_txt_paramfile(resPath);

@@ -31,25 +31,28 @@ load(fullfile(RESULTDIR,'parameters.mat'),'activeRecIds');
 animals = unique(activeRecIds(:,1));
 nRepetition = numel(animals); % number of repetition for each parameter arrangement (= #animals)
 load(fullfile(DATADIR,animals{1},'parameter_combinations.mat'),'combs');
-% Check if recordings were organized differently across animals:
-for it = 1:nRepetition
-    nCombs = load(fullfile(DATADIR,animals{it},'parameter_combinations.mat'),'combs');
-    if ~isequal(nCombs.combs,combs) % When the raws are not identical across animals
-        return
-    end
-end
+% % Check if recordings were organized differently across animals:
+% for it = 1:nRepetition
+%     nCombs = load(fullfile(DATADIR,animals{it},'parameter_combinations.mat'),'combs');
+%     if ~isequal(nCombs.combs,combs) % When the raws are not identical across animals
+%         return
+%     end
+% end
 
 % sort parameter combination matrix's rows (recordings) according to SORTBY vector:
 [sortedCombs,inx] = sortrows(combs,sortBy);
 
 % remove previous sorting:
-if exist(fullfile(RESULTDIR,'sorted_parameter_space'),'dir')
-    rmdir(fullfile(RESULTDIR,'sorted_parameter_space'));
-end
+% if exist(fullfile(RESULTDIR,'sorted_parameter_space'),'dir')
+%     rmdir(fullfile(RESULTDIR,'sorted_parameter_space'));
+% end
 % create target folder for sorted pngs:
 mkdir(fullfile(RESULTDIR,'sorted_parameter_space'));
+
 for it = 1:size(sortedCombs,1)
     for it2 = 1:nRepetition % go trough each animal
+%         srcFile = fullfile(RESULTDIR,'antiphase_synchrony',[animals{it2},'_',num2str(inx(it)),'.png']);
+%         trgtFile = fullfile(RESULTDIR,'antiphase_synchrony\sorted',[num2str(it),'_',animals{it2},'_',num2str(inx(it)),'.png']);
         srcFile = fullfile(RESULTDIR,'field_and_unit',[animals{it2},num2str(inx(it)),'.png']);
         trgtFile = fullfile(RESULTDIR,'sorted_parameter_space',[num2str(it),'_',animals{it2},num2str(inx(it)),'.png']);
         copyfile(srcFile,trgtFile);

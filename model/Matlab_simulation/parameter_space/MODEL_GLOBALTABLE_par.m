@@ -1,8 +1,9 @@
 %MODELGLOBALTABLE_PAR
-%Modeling project parameter space (excitation variance fixed), 
-%global varriables and path definitions.
+%Modeling project parameter space (VARIED: connection rate, synaptic weight, 
+%baseline tonic excitation; FIXED: excitation variance, synaptic delay, 
+%synaptic decay) global varriables and path definitions.
 %
-%   See also MODEL_GLOBALTABLE, MODEL_GLOBALTABLE_VAR.
+%   See also MODEL_GLOBALTABLE, MODELGLOBALTABLE_DELAY, MODEL_GLOBALTABLE_VAR.
 
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
@@ -12,7 +13,7 @@ clear all
 % close all
 
 % % Add code folder to path
-codepath = 'D:\MS_sync_codes';
+codepath = 'C:\Users\Barni\Documents\MSsync_codes';
 % addpath(genpath(codepath));
 
 global PROJECTID

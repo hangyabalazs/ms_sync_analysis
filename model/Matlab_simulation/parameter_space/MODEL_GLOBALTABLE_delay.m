@@ -1,13 +1,13 @@
-%MODELGLOBALTABLE_VAR
-%Modeling project variance space (VARIED: connection rate, excitation 
-%variance; FIXED: synaptic weight, baseline tonic excitation, synaptic delay
+%MODELGLOBALTABLE_DELAY
+%Modeling project delay space (VARIED: connection rate, synaptic delay; 
+%FIXED: synaptic weight, baseline tonic excitation, excitation variance, 
 %synaptic decay) global varriables and path definitions.
 %
-%   See also MODEL_GLOBALTABLE, MODEL_GLOBALTABLE_PAR, MODELGLOBALTABLE_DELAY.
-%
+%   See also MODEL_GLOBALTABLE, MODELGLOBALTABLE_PAR, MODEL_GLOBALTABLE_VAR.
+
 %   Author: Barnabas Kocsis
 %   Institute of Experimental Medicine, MTA
-%   Date: 29/10/2020
+%   Date: 29/07/2021
 
 clear all
 % close all
@@ -24,7 +24,7 @@ global ROOTDIR
 ROOTDIR = fullfile('D:',PROJECTID);
 
 global WORKFOLDER
-WORKFOLDER = 'variance_space';
+WORKFOLDER = 'delay_space';
 
 global RESULTDIR
 RESULTDIR = fullfile(ROOTDIR,'analysis',WORKFOLDER);
@@ -44,12 +44,12 @@ if ~exist(fullfile(RESULTDIR,'parameters.mat'))
     global PREPROCDIR
     PREPROCDIR = fullfile(RESULTDIR, 'PREPROC');
     
-    % Recording parameters (do not change!!!):
+    %Recording parameters (do not change!!!):
     global SR   % sampling rate
     SR = 40000;
-    global NLINCHANNELS % number of linear channels
+    global NLINCHANNELS %number of linear channels
     NLINCHANNELS = 1;
-    global NSEPTALCHANNELS % number of septal probe channels
+    global NSEPTALCHANNELS %number of septal probe channels
     NSEPTALCHANNELS = 1;
     
     %Preprocess:
@@ -86,7 +86,7 @@ if ~exist(fullfile(RESULTDIR,'parameters.mat'))
     global THSUMACGTRESH
     THSUMACGTRESH = NSR * CGWINDOW / 2; %*4; % integral threshold
     global DESUMACGTRESH
-    DESUMACGTRESH = NSR * CGWINDOW / 2; %*4; % integral threshold
+    DESUMACGTRESH = NSR * CGWINDOW / 2;%*4; % integral threshold
     
     %Phase preference
     global PHASEHISTEDGES %phase histogram edges

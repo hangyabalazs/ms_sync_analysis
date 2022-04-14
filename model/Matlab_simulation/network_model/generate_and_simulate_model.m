@@ -39,19 +39,21 @@ model_parameter_definitions; % overwrite parameters here
 
 mkdir(fullfile(DATADIR,animalIdb));
 save(fullfile(DATADIR,animalIdb,'basic_network_parameters.mat'),'nCells','segmLength','connRate',...
-    'stimAmpMu','tonicIncrease','stimVar','synDelayMu','synWeightMu','thrshMu','synVar','deltaMod');
+    'stimAmpMu','tonicIncrease','stimVar','synDecayMu','synDelayMu','synWeightMu','thrshMu','synVar','deltaMod');
 
 % Simulate model multiple times (nRecordings)
 for it = 1:nRepeat
     recordingId = num2str(it);
     % Creation of actual network parameters:
     create_network_parameters(resPath,nCells,segmLength,connRate,stimAmpMu,...
-        stimVar,synDelayMu,synWeightMu,thrshMu,synVar,tonicIncrease,deltaMod);
+        tonicIncrease,stimVar,synDecayMu,synDelayMu,synWeightMu,thrshMu,synVar,deltaMod,maxLatency);
     % Run Neuron simulation:
     run_network_simulation(resPath);
     % Preprocess Neuron output:
     mkdir(fullfile(DATADIR,animalIdb,recordingId));
+    delete(fullfile(DATADIR,animalIdb,recordingId,'*')); % remove folder contents
     mkdir(fullfile(PREPROCDIR,animalIdb,recordingId));
+    delete(fullfile(PREPROCDIR,animalIdb,recordingId,'*')); % remove folder contents
     convert_model_output(resPath,animalIdb,recordingId,true); close
     % Copy files to DATADIR:
     recFiles = return_used_folders(dir(fullfile(resPath,'actual_run')),false,{'.'});

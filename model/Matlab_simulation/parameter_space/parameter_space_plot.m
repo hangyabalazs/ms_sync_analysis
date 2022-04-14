@@ -29,7 +29,7 @@ global DATADIR
 
 if nargin < 3
     if nargin == 0
-        sortBy = [5,1,2];
+        sortBy = [1,7,2];
     end
     % Collect synchronization scores to common matrix:
     [scores,Ids] = collect_properties(fullfile(RESULTDIR,'synch_scores'),'rec',{'synchScore'});
@@ -42,7 +42,7 @@ isThDe = size(scores,2)-1; % controls later behaviour
 % corresponds to same parameter arrangements across animals)
 % Load parameter combinations matrix (rows: recordings, columns: parameters)
 load(fullfile(DATADIR,num2str(Ids(1,1)),'parameter_combinations.mat'),'combs','combTable');
-% order recordings (ascending) similarly to combs matrix (to match rows):
+% sort recordings (ascending) similarly to combs matrix (to match rows):
 [Ids,inx] = sortrows(Ids);
 scores = scores(inx,:);
 
@@ -50,7 +50,7 @@ scores = scores(inx,:);
 inx = double(categorical(Ids(:,2))); % corresponding recordings (repetitions)
 mprop1 = accumarray(inx,scores(:,1),[],@mean); % mean property vector
 if isThDe
-    mprop2 = accumarray(inx,scores(:,1),[],@mean);
+    mprop2 = accumarray(inx,scores(:,2),[],@mean);
 end
 % mprop1 = accumarray(inx,scores(:,1),[],@nanmedian); % median property vector
 % if isThDe mprop2 = accumarray(inx,scores(:,1),[],@nanmedian); end
@@ -69,13 +69,15 @@ for it = 1:nParameters
 end
 
 figure('Position',[50,50,1450,432]);
-minVal = floor(min(min(allMatrix(:,nParameters+1:end)))); % minimum score (for ploting)
-maxVal = ceil(max(max(allMatrix(:,nParameters+1:end)))); % maximum score (for ploting)
+smprop1 = allMatrix(:,nParameters+1:end); % sorted mprop1
+minVal = floor(min(min(smprop1(~isinf(smprop1))))); % minimum score (for ploting)
+maxVal = ceil(max(max(smprop1(~isinf(smprop1))))); % maximum score (for ploting)
 nPars1 = nUniques(sortBy(1));
 nPars2 = nUniques(sortBy(2));
 nPars3 = nUniques(sortBy(3));
 for it1 = 1:nPars1 %subplots
     a1 = subplot(isThDe+1,nPars1,it1);
+% % % % %     figure
     % create a second row of subplots for activity during delta:
     if isThDe a2 = subplot(isThDe+1,nPars1,it1+nPars1); end
     for it2 = 1:nPars2 % lines
@@ -86,16 +88,17 @@ for it1 = 1:nPars1 %subplots
         if isThDe % if score-pairs are given (theta-delta)
             subplot(a1), hold on
             thPoints = allMatrix(actInd,nParameters+1);
-            plot(uniPars{sortBy(3)},thPoints,'Color',[0,0,actColor],'LineWidth',linewidth);
+            plot(uniPars{sortBy(3)},thPoints,'Color',[0,actColor,0],'LineWidth',linewidth);
             %             text(1:numel(thPoints),thPoints,num2cell(actInd)) %recordingIds
             subplot(a2), hold on
             dePoints = allMatrix(actInd,nParameters+2);
-            plot(uniPars{sortBy(3)},dePoints,'Color',[0,0,actColor],'LineWidth',linewidth);
+            plot(uniPars{sortBy(3)},dePoints,'Color',[actColor,0,0],'LineWidth',linewidth);
             %             text(1:numel(dePoints),thPoints,num2cell(actInd)) %recordingIds
         else
-            subplot(a1), hold on
+            subplot(a1), 
+            hold on
             dataPoints = allMatrix(actInd,nParameters+1);
-            plot(uniPars{sortBy(3)},dataPoints,'Color',[actColor,0,0],'LineWidth',linewidth);
+            plot(uniPars{sortBy(3)},dataPoints,'Color',[0,actColor,0],'LineWidth',linewidth);
             %             text(1:numel(thPoints),thPoints,num2cell(actInd)) %recordingIds
         end
     end
@@ -104,14 +107,24 @@ for it1 = 1:nPars1 %subplots
     pbaspect([1,1,1]), ylim([minVal,maxVal])
     xlabel(combTable{sortBy(3)})
     set(gca, 'XLimSpec', 'Tight');
-    set(gca,'xtick',uniPars{sortBy(3)}); set(gca, 'xticklabels',uniPars{sortBy(3)})
-    title([combTable{sortBy(1)}, ': ', num2str(uniPars{sortBy(1)}(it1))])
+    set(gca,'xtick',uniPars{sortBy(3)}); set(gca,'xticklabels',uniPars{sortBy(3)}) % OPTION 0: automatic
+%     set(gca, 'xtick', [0.04,0.06,0.08]), set(gca, 'xticklabel', {'40','60','80'}), xlabel('Excitation (pA)'); % OPTION 1 (panel A: CR, weight, excitation)
+%     set(gca, 'xtick', [0,0.5,1]), set(gca, 'xticklabel', {0,50,100}), xlabel('CR (%)'); % OPTION 2 (panel B: excitation, weight, CR)
+%     set(gca, 'xtick', [0.001,0.006,0.012]), set(gca, 'xticklabel', {'1','6','12'}), xlabel('Syn. weight (nS)'); % OPTION 3 (panel B: excitation, CR, weight)
+%     set(gca, 'xtick', [1,7,15]), set(gca, 'xticklabel', {'1','7','15'}), xlabel('Syn. delay (ms)'); % OPTION 4 (panel D: excitation, CR, delay)
+%     set(gca, 'xtick', [0,0.1,0.2]), set(gca, 'xticklabel', {'0','10','20'}), xlabel('Stimulus variance (%)'); % OPTION 5 (panel E: excitation, CR, variance)
+%     limits=[0,1];ylim(limits),set(gca, 'ytick', [limits(1),mean(limits),limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}), setmyplot_balazs, ylabel('% in-phase (%)'); %ylabel('Sync score')
+    limits=[0,1];ylim(limits),set(gca, 'ytick', [limits(1),mean(limits),limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}), setmyplot_balazs, ylabel('Sync. score (%)')
+    title([combTable{sortBy(1)}, ': ', num2str(uniPars{sortBy(1)}(it1))]); % OPTION 0: automatic
+%     title(['CR: ', num2str(uniPars{sortBy(1)}(it1)*100), '%']); % OPTION 1 (panel A: CR, weight, excitation)
+%     title(['Excitation: ', num2str(uniPars{sortBy(1)}(it1)*1000), 'pA']); % OPTION 2 (panel B: excitation, weight, CR) AND OPTION 3 (panel C: excitation, CR, weight) AND OPTION 4 (panel D: excitation, CR, delay) AND OPTION 5 (panel E: excitation, CR, variance)
     if isThDe % do this for delta plot:
         subplot(a2)
         pbaspect([1,1,1]), ylim([minVal,maxVal])
         xlabel(combTable{sortBy(3)})
         set(gca, 'XLimSpec', 'Tight');
         set(gca,'xtick',uniPars{sortBy(3)}); set(gca, 'xticklabels',uniPars{sortBy(3)})
+        limits=[0,1];ylim(limits),set(gca, 'ytick', [limits(1),mean(limits),limits(2)]);set(gca, 'yticklabel', {limits(1),'',limits(2)}), setmyplot_balazs, ylabel('% out-phase')
         title([combTable{sortBy(1)}, ': ', num2str(uniPars{sortBy(1)}(it1))])
     end
 end
@@ -129,10 +142,14 @@ if isThDe
     Lgnd.Position(2) = 0.2;
     title(Lgnd,combTable{sortBy(2)})
 else
-    Lgnd = legend(num2str(uniPars{sortBy(2)}));
+    Lgnd = legend(num2str(uniPars{sortBy(2)})); % OPTION 0: automatic
+%     Lgnd = legend(num2str(uniPars{sortBy(2)}*1000)); % red lines: OPTION 1 (panel A: CR, weight, excitation) AND OPTION 2 (panel B: excitation, weight, CR)
+%     Lgnd = legend(num2str(uniPars{sortBy(2)}*100)); % green lines: OPTION 3 (panel C: excitation, CR, weight) AND OPTION 4 (panel D: excitation, CR, delay) AND OPTION 5 (panel E: excitation, CR, variance)
     Lgnd.Position(1) = 0.03;
     Lgnd.Position(2) = 0.4;
-    title(Lgnd,combTable{sortBy(2)})
+    title(Lgnd,combTable{sortBy(2)}); % OPTION 0: automatic
+%     title(Lgnd,'Syn. weight (uS)'); % red lines: OPTION 1 (panel A: CR, weight, excitation) AND OPTION 2 (panel B: excitation, weight, CR)
+%     title(Lgnd,'CR (%)'); % green lines: OPTION 3 (panel C: excitation, CR, weight) AND OPTION 4 (panel D: excitation, CR, delay) AND OPTION 5 (panel E: excitation, CR, variance)
 end
 
 %% Create 3d surface plot:
@@ -145,7 +162,7 @@ if exist('is3D','var')
             actInx = nPars2*nPars3*(it2-1)+1:nPars2*nPars3*it2;
             X = reshape(allMatrix(actInx,sortBy(2)),[nPars3,nPars2]);
             Y = reshape(allMatrix(actInx,sortBy(3)),[nPars3,nPars2]);
-            Z = reshape(allMatrix(actInx,6),[nPars3,nPars2]);
+            Z = reshape(allMatrix(actInx,nParameters+1),[nPars3,nPars2]);
             if it1==it2
                 surf(X,Y,Z,'FaceColor',[(it1+1)/(nPars1+1),0,0]); hold on
             else

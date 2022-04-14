@@ -18,8 +18,9 @@ allnCells = sum(headerFile(1:end-3));
 
 synapsesFile = xlsread(fullfile(resPath,'synapses.xlsx'));
 % thrshMatrix = synapsesFile(1:allnCells, 1:allnCells);
-% delayMatrix = synapsesFile(allnCells+1:allnCells*2, 1:allnCells);
-weightMatrix = synapsesFile(allnCells*2+1:allnCells*3, 1:allnCells);
+% decayMatrix = synapsesFile(allnCells+1:allnCells*2, 1:allnCells);
+% delayMatrix = synapsesFile(allnCells*2+1:allnCells*3, 1:allnCells);
+weightMatrix = synapsesFile(allnCells*3+1:allnCells*4, 1:allnCells);
 % Synaptical strength graph
 G = digraph(weightMatrix); % create directed graph
 weights = normalize(G.Edges.Weight,'range')*4+0.01; % scale weights

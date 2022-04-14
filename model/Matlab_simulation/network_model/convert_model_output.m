@@ -46,6 +46,7 @@ timeVec = timeVec(2:end); %erase first element
 potentials = dlmread(fullfile(resPath,'actual_run','potentials.dat'), 'r');
 
 allCellAct = reshape(potentials, nCells, []).'; % each cells' potential is stored in one row
+% nplot(1/SR:1/SR:size(allCellAct,1)/SR,allCellAct); k
 
 % Find AP times:
 % allocate vectors:
@@ -61,6 +62,7 @@ for it = 1:nCells % iterate trough each cell
     clu(lastPos:lastPos+length(locs)-1) = it; % cellId
     TS = round(locs/(SR/NSR)); % rescale time
     TS(TS==0) = 1; % change index if equals 0
+%     hold on, plot_raster_lines_fast(TS,[it,it+1]); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     APseries(TS,it) = 1; % create spiketrain
     if exist('issave','var')
         save(fullfile(PREPROCDIR,animalId,recordingId,['TT1_',num2str(it),'.mat']),'TS');
@@ -74,7 +76,7 @@ clu(lastPos:end) = []; % clear unused positions
 clu = clu(inx);
 
 % Gaussian kernel:
-nPoints = 50; %20;
+nPoints = 50; %20; % HARD CODED HERE!!!
 kernel = gausswin(nPoints)/nPoints*2;
 % Derive theoretical hippocampal signal:
 fieldPot = sum(APseries,2).'; % average spike trains

@@ -23,8 +23,9 @@ allnCells = sum(nCells);
 %Synapses:
 synapsesFile = xlsread(fullfile(resPath,'actual_run','synapses.xlsx'));
 thrshMatrix = synapsesFile(1:allnCells, 1:allnCells);
-delayMatrix = synapsesFile(allnCells+1:allnCells*2, 1:allnCells);
-weightMatrix = synapsesFile(allnCells*2+1:allnCells*3, 1:allnCells);
+decayMatrix = synapsesFile(allnCells+1:allnCells*2, 1:allnCells);
+delayMatrix = synapsesFile(allnCells*2+1:allnCells*3, 1:allnCells);
+weightMatrix = synapsesFile(allnCells*3+1:allnCells*4, 1:allnCells);
 %Stimulations:
 stimMatrix = xlsread(fullfile(resPath,'actual_run','stimulation.xlsx'));
 deltaStimMatrix = xlsread(fullfile(resPath,'actual_run','deltaStimulation.xlsx'));
@@ -38,6 +39,10 @@ fprintf(paramFile,'\n');
 fprintf(paramFile,'%f %f %f \n',segmLenghts);
 for it = 1:size(thrshMatrix, 2)
     fprintf(paramFile,'%f %f %f ', thrshMatrix(it, :));
+    fprintf(paramFile,'\n');
+end
+for it = 1:size(decayMatrix, 2)
+    fprintf(paramFile,'%f %f %f ', decayMatrix(it, :));
     fprintf(paramFile,'\n');
 end
 for it = 1:size(delayMatrix, 2)
