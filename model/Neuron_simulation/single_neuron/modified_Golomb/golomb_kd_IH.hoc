@@ -12,7 +12,7 @@
 //       In: Ulinski P.S., Jones E.G., Peters A. (eds) Models of Cortical Circuits.
 //      Cerebral Cortex, vol 13. Springer, Boston, MA. https://doi.org/10.1007/978-1-4615-4903-1_2.
 
-SIMTIME = 700 //simulation lenght, (ms)
+SIMTIME = 3000 // 700 //simulation lenght, (ms)
 current = 0.1 //(nA) (Golomb cell: 0.0042nA on 100 um2, here: 0.0042*50 nA on 5000um2 would be the rational) OR -0.3 for sag response
 color = 1 //first color
 tstop = SIMTIME //(ms)
@@ -75,12 +75,12 @@ objectvar stim[nStim]
 
 proc rerun() {
 	gmax_IH_params = GIH
-	gkd_kd_new = GKD
-	tau_a_kd_new = TAUA
-	tau_b_kd_new = TAUB
+	gkd_kd = GKD //gkd_kd_new = GKD
+	tau_a_kd = TAUA //tau_a_kd_new = TAUA
+	tau_b_kd = TAUB //tau_b_kd_new = TAUB
 for i = 0, nStim-1 {
 	soma stim[i] = new IClamp(0.5)
-	stim[i].amp = current //density measure: aplied current will be distributed along the cell surface
+	stim[i].amp = current //density measure: applied current will be distributed along the cell surface
 	stim[i].dur = SIMTIME-150 //duration (ms)
 	stim[i].del = 50 //delay (ms)
 }

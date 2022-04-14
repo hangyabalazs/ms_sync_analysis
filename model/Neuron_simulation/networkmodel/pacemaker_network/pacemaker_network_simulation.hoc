@@ -43,23 +43,23 @@ for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the i
 	}
 }
 
-//1. mode: fixing synaptic delays, and vary timeconstants (tau, decay factor)
-//load time constants (MATLAB generated .txt file)::
+
+//load time constants ((= decay factor), MATLAB generated .txt file)::
 double decayMatrix[nCTB][nCTB]
 for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
 	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
 		decayMatrix[i1][i2] = fscan()
 	}
 }
-//2. mode: fixing timeconstants (tau, decay factor), and vary synaptic delays
-// Or instead of decay time constants we can controll synaptic delays:
+
+
 //load time delays (MATLAB generated .txt file)::
-//double delayMatrix[nCTB][nCTB]
-//for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
-//	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
-//		delayMatrix[i1][i2] = fscan()
-//	}
-//}
+double delayMatrix[nCTB][nCTB]
+for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the innervation)
+	for (i2=0; i2<nCTB; i2=i2+1) { //one row represents the innervated cells
+		delayMatrix[i1][i2] = fscan()
+	}
+}
 
 
 //load weights (MATLAB generated .txt file)::
@@ -74,21 +74,17 @@ for (i1=0; i1<nCTB; i1=i1+1) { //each row represents one cell (which gives the i
 objectvar syns[nCTB][nCTB]
 for i1 = 0, nCTB-1 { //who gives
 	for i2 = 0, nCTB-1 { //who receives
-		//1. mode: fixing synaptic delays, and vary timeconstants (tau, decay factor)
 		timeC = decayMatrix[i1][i2]
-		delay = 1
-		//2. mode: fixing timeconstants (tau, decay factor), and vary synaptic delays
-		//timeC = 5 
-		//delay = delayMatrix[i1][i2]
-		
+		delay = delayMatrix[i1][i2]
 		revPot = revMatrix[i1][i2]
 		weight = weightMatrix[i1][i2]
+		
 		//cellMatrix[i2] receives an event from cellMatrix[i1] (synapse stored in syns[i1][i2])
 		cellMatrix[i2].soma syns[i1][i2] = new ExpSyn(0) //defaults: ExpSyn.tau = 0.1; ExpSyn.e = 0;
 		syns[i1][i2].e = revPot
 		syns[i1][i2].tau = timeC
 		//synaptic current (nanoamps): i = (weight * exp(-t/tau))*(v-e)
-		cellMatrix[i1].soma cellMatrix[i2].nclist.append(new NetCon(&v(1), syns[i1][i2], 0, delay, weight)) //event crossing 0 mV, will generate an event on the postsynaptic side 1 ms later
+		cellMatrix[i1].soma cellMatrix[i2].nclist.append(new NetCon(&v(1), syns[i1][i2], 0, delay, weight)) //event crossing 0 mV, will generate an event on the postsynaptic side <delay> ms later
 	}
 }
 
@@ -97,7 +93,6 @@ for i1 = 0, nCTB-1 { //who gives
 //----------------------------------------------------------------------------
 
 numofStim = fscan()  //number of stimulations
-print numofStim
 objref stimMatrix[numofStim]
 objref stimAmp, cellIds
 cellIds = new Vector(numofStim)
