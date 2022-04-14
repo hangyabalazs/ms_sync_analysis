@@ -1,4 +1,4 @@
-function execute_optoGroups(funcCallDef)
+function output = execute_optoGroups(funcCallDef)
 %EXECUTE_OPTOGROUPS Executes instructions on all optogroups.
 %   EXECUTE_OPTOGROUPS(FUNCCALLDEF) iterates trough all opto groups 
 %   executing FUNCCALDEF function call definition on each.
@@ -13,10 +13,12 @@ function execute_optoGroups(funcCallDef)
 
 optoGroups = {'CHT','PVR','VGA','VGL'};
 
+output = cell(1000,1);
 for it = 1:numel(optoGroups)
     [rowIds,cellBNames,isDel,taggInd] = get_optoGroup_indices_in_allCell(optoGroups{it});
     if ~isempty(rowIds)
         eval(funcCallDef);
     end
 end
+output{it1+1:end} = [];
 end

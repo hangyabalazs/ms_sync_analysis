@@ -1,4 +1,4 @@
-function [output1,output2,IDs] = execute_activeRecIds(funcCallDef,m)
+function [output1,output2,IDs] = execute_activeRecIds(funcCallDef,m,issort)
 %EXECUTE_ACTIVERECIDS executes given instructions for all active recording/
 %cells in active recordings.
 %   [OUTPUT1,OUTPUT2?IDS] = EXECUTE_ACTIVERECIDS(FUNCCALDEF,M) iterates 
@@ -10,6 +10,9 @@ function [output1,output2,IDs] = execute_activeRecIds(funcCallDef,m)
 %   Parameters:
 %   FUNCCALDEF: string (e.g. 'save_hippocampal_field(animalIdN,recordingIdN,true)').
 %   M: string, controlling function behaviour ('rec' or 'cell').
+%   ISSORT: sort ACTIVERECIDS array. If not specified, than instructions 
+%   will be executed in the original order of recordings (based on
+%   filenames).
 %   OUTPUT1 and OUTPUT2: arrays (vector and cell), storing optional outputs.
 %   IDS: optional output, collecting Ids of elements.
 %
@@ -26,6 +29,11 @@ load(fullfile(RESULTDIR,'parameters.mat'));
 if nargin == 0
     variable_definitions; % funcCallDef definition
     %     figure
+end
+
+if exist('issort','var')
+    activeRecIds = cellstr(string(sortrows(str2double(activeRecIds)))); % sort recordings
+    'Recording order sorted!'
 end
 
 cntr = 1;

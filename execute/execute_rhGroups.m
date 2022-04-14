@@ -1,4 +1,4 @@
-function execute_rhGroups(funcCallDef,m)
+function output = execute_rhGroups(funcCallDef,m)
 %EXECUTE_RHGROUPS Execeutes instructions on all rhythimcity groups.
 %   EXECUTE_RHGROUPS(FUNCCALLDEF,M) iterates trough all rhythmicity groups
 %   executing FUNCCALDEF function call definition on each.
@@ -18,13 +18,16 @@ global RESULTDIR
 
 load(fullfile(RESULTDIR,'rhythmic_groups','rhGroups'),'rhGroups');
 
-if exist('m')
-    [~,inx] = ismember({'CTB','CTT','CD_','DT_','NT_'},rhGroups(:,1));
+if exist('m','var')
+    [~,inx] = ismember({'CTB','CTT','CD_','DT_','NT_','NN_'},rhGroups(:,1));
     rhGroups = rhGroups(inx,:);
 end
 
+output = cell(1000,1);
 for it = 1:size(rhGroups,1)
     rowIds = get_rhGroup_indices_in_allCell(rhGroups{it,1});
+    [sColor,symbol,markerSize] = rhgroup_colors(rhGroups{it,1});
     eval(funcCallDef);
 end
+output(it+1:end) = [];
 end

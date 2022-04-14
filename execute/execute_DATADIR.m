@@ -1,7 +1,7 @@
 function [output1,output2] = execute_DATADIR(funcCallDef,m)
 %EXECUTE_DATADIR executes given instructions for all recording/ cells.
 %   [OUTPUT1,OUTPUT2] = EXECUTE_DATADIR(FUNCCALDEF,M) iterates trough all
-%   recordings in DATADIR executing FUNCCALDEF function call definition on 
+%   recordings in DATADIR executing FUNCCALDEF function call definition on
 %   each.
 %   If M is 'rec' it executes the function call on every recording. If M
 %   is 'cell' it lists all cells from the PREPROCDIR (given animal,
@@ -55,4 +55,5 @@ for it1 = 1:length(animalFolders) % iterate trough all animals
     
     output1(it1+1:end) = [];
     output2(it1+1:end) = [];
+end
 end
